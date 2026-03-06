@@ -4,7 +4,7 @@ import { userProfiles } from '../database/schema'
 import type { H3Event } from 'h3'
 
 export async function getAuthSession(event: H3Event) {
-  const auth = serverAuth()
+  const auth = serverAuth(event)
   return auth.api.getSession({ headers: event.headers })
 }
 

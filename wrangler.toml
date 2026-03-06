@@ -5,13 +5,13 @@ compatibility_date = "2025-07-15"
 [[d1_databases]]
 binding = "DB"
 database_name = "pubtest-db"
-database_id = "local"  # Will be replaced with real ID for production
+database_id = "00000000-0000-0000-0000-000000000000"  # Placeholder for local dev
 
 # KV Namespace for rate limiting
 [[kv_namespaces]]
 binding = "RATE_LIMIT"
-id = "local"  # Will be replaced with real ID for production
+id = "00000000-0000-0000-0000-000000000001"  # Placeholder for local dev
 
-# Workers AI
-[ai]
-binding = "AI"
+# Workers AI - uncomment when deploying to production
+# [ai]
+# binding = "AI"

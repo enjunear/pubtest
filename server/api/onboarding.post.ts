@@ -3,8 +3,7 @@ import { eq } from 'drizzle-orm'
 import { userProfiles, electorates } from '../database/schema'
 
 export default defineEventHandler(async (event) => {
-  const auth = serverAuth()
-  const session = await auth.api.getSession({ headers: event.headers })
+  const session = await getAuthSession(event)
 
   if (!session?.user) {
     throw createError({ statusCode: 401, message: 'Not authenticated' })
