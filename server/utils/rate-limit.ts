@@ -30,7 +30,7 @@ export async function checkRateLimit(
   timestamps = timestamps.filter(t => now - t < windowMs)
 
   if (timestamps.length >= maxRequests) {
-    const oldestInWindow = timestamps[0]
+    const oldestInWindow = timestamps[0]!
     const retryAfter = Math.ceil((oldestInWindow + windowMs - now) / 1000)
     return { allowed: false, remaining: 0, retryAfter }
   }

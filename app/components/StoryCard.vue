@@ -25,15 +25,20 @@ interface Story {
 const props = defineProps<{
   story: Story
   userVote?: 'pass' | 'fail' | null
+  voteCounts?: { passCount: number, failCount: number, totalVotes: number } | null
 }>()
 
 const emit = defineEmits<{
   vote: [clusterId: number, vote: 'pass' | 'fail']
 }>()
 
+const effectivePass = computed(() => props.voteCounts?.passCount ?? props.story.passCount)
+const effectiveFail = computed(() => props.voteCounts?.failCount ?? props.story.failCount)
+const effectiveTotal = computed(() => props.voteCounts?.totalVotes ?? props.story.totalVotes)
+
 const passPercent = computed(() => {
-  if (props.story.totalVotes === 0) return 50
-  return Math.round((props.story.passCount / props.story.totalVotes) * 100)
+  if (effectiveTotal.value === 0) return 50
+  return Math.round((effectivePass.value / effectiveTotal.value) * 100)
 })
 
 const timeAgo = computed(() => {
@@ -106,7 +111,7 @@ const timeAgo = computed(() => {
             />
           </div>
           <span class="text-xs text-gray-500 w-16 text-right">
-            {{ story.totalVotes > 0 ? `${passPercent}% (${story.totalVotes})` : 'No votes' }}
+            {{ effectiveTotal > 0 ? `${passPercent}% (${effectiveTotal})` : 'No votes' }}
           </span>
 
           <!-- Vote buttons -->
