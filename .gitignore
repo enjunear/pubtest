@@ -1,6 +1,7 @@
 # Nuxt
 .nuxt
 .output
+dist
 .data
 .nitro
 .cache

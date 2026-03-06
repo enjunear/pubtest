@@ -1,8 +1,7 @@
 <script setup lang="ts">
 const route = useRoute()
-const { loggedIn } = useAuth()
 
-const { data: story, refresh } = await useFetch<{
+const { data: story } = await useFetch<{
   id: number
   url: string
   headline: string
@@ -17,34 +16,28 @@ const { data: story, refresh } = await useFetch<{
   failCount: number
   totalVotes: number
 }>(`/api/stories/${route.params.id}`)
-const { data: userVotes, refresh: refreshVotes } = await useFetch('/api/votes/mine', {
-  default: () => ({} as Record<number, string>),
-})
 
 if (!story.value) {
   throw createError({ statusCode: 404, message: 'Story not found' })
 }
 
-const currentVote = computed(() =>
-  story.value?.clusterId ? userVotes.value?.[story.value.clusterId] || null : null,
-)
+const { getUserVote, getVoteCounts, castVote } = useVoting()
+
+const currentVote = computed(() => getUserVote(story.value?.clusterId ?? null))
+
+const counts = computed(() => {
+  if (!story.value) return { passCount: 0, failCount: 0, totalVotes: 0 }
+  return getVoteCounts(story.value.clusterId, story.value.passCount, story.value.failCount)
+})
 
 const passPercent = computed(() => {
-  if (!story.value || story.value.totalVotes === 0) return 50
-  return Math.round((story.value.passCount / story.value.totalVotes) * 100)
+  if (counts.value.totalVotes === 0) return 50
+  return Math.round((counts.value.passCount / counts.value.totalVotes) * 100)
 })
 
 async function handleVote(vote: 'pass' | 'fail') {
-  if (!loggedIn.value) {
-    await navigateTo('/login')
-    return
-  }
   if (!story.value?.clusterId) return
-  await $fetch('/api/votes', {
-    method: 'POST',
-    body: { clusterId: story.value.clusterId, vote },
-  })
-  await Promise.all([refresh(), refreshVotes()])
+  await castVote(story.value.clusterId, vote, counts.value.passCount, counts.value.failCount)
 }
 </script>
 
@@ -117,7 +110,7 @@ async function handleVote(vote: 'pass' | 'fail') {
           </div>
           <span class="text-red-600 text-sm font-medium">{{ 100 - passPercent }}% Fail</span>
         </div>
-        <p class="text-xs text-gray-500 text-center">{{ story.totalVotes }} votes</p>
+        <p class="text-xs text-gray-500 text-center">{{ counts.totalVotes }} votes</p>
 
         <!-- Vote buttons -->
         <div class="flex gap-3">

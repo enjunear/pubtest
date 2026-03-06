@@ -1,5 +1,4 @@
 <script setup lang="ts">
-const { loggedIn } = useAuth()
 const sort = ref('new')
 const page = ref(1)
 
@@ -11,26 +10,13 @@ const { data, refresh } = await useFetch('/api/stories', {
   })),
 })
 
-// Fetch user's votes if logged in
-const { data: userVotes, refresh: refreshVotes } = await useFetch('/api/votes/mine', {
-  default: () => ({} as Record<number, 'pass' | 'fail'>),
-})
+const { getUserVote, getVoteCounts, castVote } = useVoting()
 
 async function handleVote(clusterId: number, vote: 'pass' | 'fail') {
-  if (!loggedIn.value) {
-    await navigateTo('/login')
-    return
-  }
-  try {
-    await $fetch('/api/votes', {
-      method: 'POST',
-      body: { clusterId, vote },
-    })
-    await Promise.all([refresh(), refreshVotes()])
-  }
-  catch (err: any) {
-    console.error('Vote failed:', err)
-  }
+  const story = data.value?.stories?.find(s => s.clusterId === clusterId)
+  if (!story) return
+  const counts = getVoteCounts(clusterId, story.passCount, story.failCount)
+  await castVote(clusterId, vote, counts.passCount, counts.failCount)
 }
 
 const sortOptions = [
@@ -63,7 +49,8 @@ const sortOptions = [
         v-for="story in data.stories"
         :key="story.id"
         :story="story"
-        :user-vote="story.clusterId ? (userVotes?.[story.clusterId] as 'pass' | 'fail' | undefined) || null : null"
+        :user-vote="getUserVote(story.clusterId)"
+        :vote-counts="story.clusterId ? getVoteCounts(story.clusterId, story.passCount, story.failCount) : null"
         @vote="handleVote"
       />
 

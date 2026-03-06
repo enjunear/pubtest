@@ -251,25 +251,25 @@
           "id": "5.1",
           "name": "Build vote API endpoints",
           "description": "POST /api/votes - cast or change vote (user_id, cluster_id, vote). DELETE /api/votes - remove vote. Server-side enforcement of one vote per user per story via unique constraint. Record ip_hash with vote",
-          "completed": false
+          "completed": true
         },
         {
           "id": "5.2",
           "name": "Build vote UI interaction",
           "description": "Pass/Fail buttons on story cards and detail page. Optimistic UI update. Show current user's vote state (highlighted button). Require auth — prompt login if not authenticated",
-          "completed": false
+          "completed": true
         },
         {
           "id": "5.3",
           "name": "Build vote aggregation queries",
           "description": "Efficient queries for: total pass/fail per story, per polly (across all linked stories), pass percentage. Consider caching aggregates in KV for hot stories",
-          "completed": false
+          "completed": true
         },
         {
           "id": "5.4",
           "name": "Implement vote rate limiting",
           "description": "Max 50 votes per hour per account via KV counter. New accounts (< 24hrs): max 10 votes. Return 429 with retry-after header when exceeded",
-          "completed": false
+          "completed": true
         }
       ]
     },

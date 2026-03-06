@@ -15,13 +15,35 @@ export default defineEventHandler(async (event) => {
   }
 
   const db = drizzle(event.context.cloudflare.env.DB)
+  const userId = session.user.id
+
+  // Check account age for rate limit tier
+  const profile = await getUserProfile(event, userId)
+  const accountAgeHours = profile
+    ? (Date.now() - new Date(profile.createdAt).getTime()) / 3600000
+    : 0
+
+  // Rate limit: 10/hr for accounts < 24hrs old, 50/hr otherwise
+  const maxVotesPerHour = accountAgeHours < 24 ? 10 : 50
+  const rateCheck = await checkRateLimit(event, 'vote', userId, maxVotesPerHour, 3600)
+
+  if (!rateCheck.allowed) {
+    throw createError({
+      statusCode: 429,
+      message: 'Vote rate limit exceeded. Try again later.',
+      data: { retryAfter: rateCheck.retryAfter },
+    })
+  }
+
   const now = new Date()
+  const ip = getRequestIP(event) || 'unknown'
+  const ipHashed = hashIP(ip)
 
   // Check for existing vote
   const [existing] = await db
     .select({ id: votes.id, vote: votes.vote })
     .from(votes)
-    .where(and(eq(votes.userId, session.user.id), eq(votes.clusterId, body.clusterId)))
+    .where(and(eq(votes.userId, userId), eq(votes.clusterId, body.clusterId)))
     .limit(1)
 
   if (existing) {
@@ -33,18 +55,17 @@ export default defineEventHandler(async (event) => {
     // Change vote
     await db
       .update(votes)
-      .set({ vote: body.vote, updatedAt: now })
+      .set({ vote: body.vote, ipHash: ipHashed, updatedAt: now })
       .where(eq(votes.id, existing.id))
     return { action: 'changed', vote: body.vote }
   }
 
   // Cast new vote
-  const ipHash = getRequestIP(event) || 'unknown'
   await db.insert(votes).values({
-    userId: session.user.id,
+    userId,
     clusterId: body.clusterId,
     vote: body.vote,
-    ipHash,
+    ipHash: ipHashed,
     createdAt: now,
     updatedAt: now,
   })
