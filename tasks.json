@@ -98,55 +98,55 @@
           "id": "2.1",
           "name": "Configure Better Auth server",
           "description": "Set up Better Auth in server/auth.ts with D1 database adapter via Drizzle. Configure session handling. Set up the auth API handler at server/api/auth/[...all].ts",
-          "completed": false
+          "completed": true
         },
         {
           "id": "2.2",
           "name": "Configure OAuth providers",
           "description": "Set up Google OAuth provider in Better Auth config. Set up Apple OAuth provider. Configure callback URLs for local dev. Store client IDs/secrets in .env (local) and wrangler secrets (prod)",
-          "completed": false
+          "completed": true
         },
         {
           "id": "2.3",
           "name": "Configure magic link provider",
           "description": "Set up email magic link in Better Auth. Integrate Resend for email delivery. Configure magic link template. Test locally with Resend test mode or console logging",
-          "completed": false
+          "completed": true
         },
         {
           "id": "2.4",
           "name": "Build login/register page",
           "description": "Single auth page with: Google sign-in button, Apple sign-in button, email input for magic link. Cloudflare Turnstile widget. No password fields anywhere",
-          "completed": false
+          "completed": true
         },
         {
           "id": "2.5",
           "name": "Build onboarding flow",
           "description": "After first OAuth/magic link sign-in, redirect to onboarding page: age declaration checkbox (must be 18+), electorate searchable dropdown. Creates user_profiles record. Flag onboarding_complete=true. Subsequent logins skip onboarding",
-          "completed": false
+          "completed": true
         },
         {
           "id": "2.6",
           "name": "Build auth middleware",
           "description": "Nuxt server middleware to populate user context from Better Auth session on all requests. Composable useAuth() for client-side auth state. Protected route middleware for pages requiring auth",
-          "completed": false
+          "completed": true
         },
         {
           "id": "2.7",
           "name": "Build user settings page",
           "description": "Page to change electorate, view linked OAuth accounts, delete account (soft-delete retains anonymised vote data). Protected route",
-          "completed": false
+          "completed": true
         },
         {
           "id": "2.8",
           "name": "Integrate Cloudflare Turnstile",
           "description": "Add Turnstile widget to auth page. Verify token server-side before allowing sign-in/registration. Prevents bot account creation",
-          "completed": false
+          "completed": true
         },
         {
           "id": "2.9",
           "name": "Test auth flows locally end-to-end",
           "description": "Verify: Google OAuth flow, magic link flow, onboarding, session persistence, logout, settings page. All against local D1",
-          "completed": false
+          "completed": true
         }
       ]
     },
@@ -159,49 +159,49 @@
           "id": "3.1",
           "name": "Build RSS feed parser",
           "description": "Server utility to fetch and parse RSS/Atom feeds. Extract: article URL, title, published date, GUID. Handle various feed formats (RSS 2.0, Atom, etc.)",
-          "completed": false
+          "completed": true
         },
         {
           "id": "3.2",
           "name": "Build metadata fetcher",
           "description": "Server utility to fetch a URL and extract OpenGraph metadata: og:title, og:description, og:image, article:published_time. Fallback to meta tags and JSON-LD. Handle paywalled/blocked pages gracefully",
-          "completed": false
+          "completed": true
         },
         {
           "id": "3.3",
           "name": "Build AI relevance filter",
           "description": "Using Workers AI, classify whether an article is about Australian federal politics. Prompt with headline + description, return boolean. Discard non-political articles. Test locally with wrangler AI bindings",
-          "completed": false
+          "completed": true
         },
         {
           "id": "3.4",
           "name": "Build AI politician extractor",
           "description": "Using Workers AI, extract politician names mentioned in article headline + description. Match against polly database (fuzzy match on name/display_name). Return list of politician IDs",
-          "completed": false
+          "completed": true
         },
         {
           "id": "3.5",
           "name": "Build story creation service",
           "description": "Server service that takes a URL, fetches metadata, checks for URL dedup, runs AI relevance filter, extracts pollies, creates story + story_politicians records. Used by both RSS ingestion and user submission",
-          "completed": false
+          "completed": true
         },
         {
           "id": "3.6",
           "name": "Build RSS cron worker",
           "description": "Cloudflare Cron Trigger that runs every 15 minutes. Iterates active RSS feeds, fetches new articles since last poll, runs each through story creation service. Updates last_polled_at and last_article_guid. Implements error backoff. Test locally with wrangler dev --test-scheduled",
-          "completed": false
+          "completed": true
         },
         {
           "id": "3.7",
           "name": "Build RSS feed admin management API",
           "description": "CRUD endpoints for RSS feeds: list, add, edit, pause/resume, delete. Used by admin panel",
-          "completed": false
+          "completed": true
         },
         {
           "id": "3.8",
           "name": "Test RSS pipeline locally end-to-end",
           "description": "Trigger cron manually, verify: feeds polled, articles fetched, AI filters applied, stories created with polly links, duplicates rejected. All against local D1",
-          "completed": false
+          "completed": true
         }
       ]
     },
