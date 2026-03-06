@@ -1,0 +1,561 @@
+{
+  "project": "The Pub Test",
+  "created": "2026-03-06",
+  "notes": "All development done locally using wrangler dev before any production deployment. Auth via Better Auth (OAuth + magic link, no passwords stored).",
+  "phases": [
+    {
+      "id": "phase-0",
+      "name": "Project Foundation",
+      "description": "Project scaffolding, tooling, and local dev infrastructure",
+      "tasks": [
+        {
+          "id": "0.1",
+          "name": "Initialise Nuxt 3 project",
+          "description": "Scaffold Nuxt 3 project with TypeScript, configure nuxt.config.ts with cloudflare-pages preset via Nitro",
+          "completed": false
+        },
+        {
+          "id": "0.2",
+          "name": "Configure Cloudflare bindings for local dev",
+          "description": "Set up wrangler.toml with D1 database binding, KV namespace bindings (rate-limits), and Workers AI binding. All pointing to local dev resources",
+          "completed": false
+        },
+        {
+          "id": "0.3",
+          "name": "Install core dependencies",
+          "description": "Install: nuxt-ui (component library), drizzle-orm + drizzle-kit (D1 ORM + migrations), better-auth + @better-auth/nuxt, chart.js, and dev tooling",
+          "completed": false
+        },
+        {
+          "id": "0.4",
+          "name": "Set up D1 database with Drizzle ORM",
+          "description": "Define Drizzle schema, configure drizzle-kit for D1 migrations, create initial migration. Run locally with wrangler d1",
+          "completed": false
+        },
+        {
+          "id": "0.5",
+          "name": "Create base layout and app shell",
+          "description": "Header with nav (Home, Pollies, Leaderboard, Login), footer, responsive mobile layout, dark/light mode toggle",
+          "completed": false
+        },
+        {
+          "id": "0.6",
+          "name": "Verify local dev environment end-to-end",
+          "description": "Confirm Nuxt dev server works with local D1, KV, and AI bindings via wrangler dev. Ensure hot reload works. Document local dev setup in README",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "id": "phase-1",
+      "name": "Database Schema & Seed Data",
+      "description": "Define all tables, seed with real Australian political data locally",
+      "tasks": [
+        {
+          "id": "1.1",
+          "name": "Create database schema - Better Auth tables",
+          "description": "Drizzle schema for Better Auth managed tables: user, session, account, verification. These are created/managed by Better Auth but defined in Drizzle for type safety",
+          "completed": false
+        },
+        {
+          "id": "1.2",
+          "name": "Create database schema - app tables",
+          "description": "Drizzle schema for: user_profiles, electorates, politicians, sources, rss_feeds, stories, story_clusters, story_politicians, votes, polly_daily_stats, admin_log. Apply migration to local D1",
+          "completed": false
+        },
+        {
+          "id": "1.3",
+          "name": "Create indexes",
+          "description": "Add indexes: votes(user_id, cluster_id) unique, stories(url_hash) unique, stories(status, submitted_at), story_politicians(politician_id), polly_daily_stats(politician_id, date), user_profiles(user_id) unique",
+          "completed": false
+        },
+        {
+          "id": "1.4",
+          "name": "Seed electorates data",
+          "description": "Source all 151 federal electorates from AEC data with state/territory mapping. Create seed script that runs against local D1",
+          "completed": false
+        },
+        {
+          "id": "1.5",
+          "name": "Seed politicians data",
+          "description": "Source current federal MPs and Senators from APH/OpenAustralia. Include: name, party, chamber, electorate/state, photo URL. Create seed script",
+          "completed": false
+        },
+        {
+          "id": "1.6",
+          "name": "Seed news sources and RSS feeds",
+          "description": "Create seed data for Tier 1 sources (domain, name, tier) and their RSS feed URLs (ABC Politics, Guardian AU, SMH Federal, SBS Politics, The Conversation, etc.) with poll intervals",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "id": "phase-2",
+      "name": "Authentication System",
+      "description": "Better Auth setup with OAuth and magic link, no passwords stored",
+      "tasks": [
+        {
+          "id": "2.1",
+          "name": "Configure Better Auth server",
+          "description": "Set up Better Auth in server/auth.ts with D1 database adapter via Drizzle. Configure session handling. Set up the auth API handler at server/api/auth/[...all].ts",
+          "completed": false
+        },
+        {
+          "id": "2.2",
+          "name": "Configure OAuth providers",
+          "description": "Set up Google OAuth provider in Better Auth config. Set up Apple OAuth provider. Configure callback URLs for local dev. Store client IDs/secrets in .env (local) and wrangler secrets (prod)",
+          "completed": false
+        },
+        {
+          "id": "2.3",
+          "name": "Configure magic link provider",
+          "description": "Set up email magic link in Better Auth. Integrate Resend for email delivery. Configure magic link template. Test locally with Resend test mode or console logging",
+          "completed": false
+        },
+        {
+          "id": "2.4",
+          "name": "Build login/register page",
+          "description": "Single auth page with: Google sign-in button, Apple sign-in button, email input for magic link. Cloudflare Turnstile widget. No password fields anywhere",
+          "completed": false
+        },
+        {
+          "id": "2.5",
+          "name": "Build onboarding flow",
+          "description": "After first OAuth/magic link sign-in, redirect to onboarding page: age declaration checkbox (must be 18+), electorate searchable dropdown. Creates user_profiles record. Flag onboarding_complete=true. Subsequent logins skip onboarding",
+          "completed": false
+        },
+        {
+          "id": "2.6",
+          "name": "Build auth middleware",
+          "description": "Nuxt server middleware to populate user context from Better Auth session on all requests. Composable useAuth() for client-side auth state. Protected route middleware for pages requiring auth",
+          "completed": false
+        },
+        {
+          "id": "2.7",
+          "name": "Build user settings page",
+          "description": "Page to change electorate, view linked OAuth accounts, delete account (soft-delete retains anonymised vote data). Protected route",
+          "completed": false
+        },
+        {
+          "id": "2.8",
+          "name": "Integrate Cloudflare Turnstile",
+          "description": "Add Turnstile widget to auth page. Verify token server-side before allowing sign-in/registration. Prevents bot account creation",
+          "completed": false
+        },
+        {
+          "id": "2.9",
+          "name": "Test auth flows locally end-to-end",
+          "description": "Verify: Google OAuth flow, magic link flow, onboarding, session persistence, logout, settings page. All against local D1",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "id": "phase-3",
+      "name": "RSS Ingestion Pipeline",
+      "description": "Automated story ingestion from news RSS feeds",
+      "tasks": [
+        {
+          "id": "3.1",
+          "name": "Build RSS feed parser",
+          "description": "Server utility to fetch and parse RSS/Atom feeds. Extract: article URL, title, published date, GUID. Handle various feed formats (RSS 2.0, Atom, etc.)",
+          "completed": false
+        },
+        {
+          "id": "3.2",
+          "name": "Build metadata fetcher",
+          "description": "Server utility to fetch a URL and extract OpenGraph metadata: og:title, og:description, og:image, article:published_time. Fallback to meta tags and JSON-LD. Handle paywalled/blocked pages gracefully",
+          "completed": false
+        },
+        {
+          "id": "3.3",
+          "name": "Build AI relevance filter",
+          "description": "Using Workers AI, classify whether an article is about Australian federal politics. Prompt with headline + description, return boolean. Discard non-political articles. Test locally with wrangler AI bindings",
+          "completed": false
+        },
+        {
+          "id": "3.4",
+          "name": "Build AI politician extractor",
+          "description": "Using Workers AI, extract politician names mentioned in article headline + description. Match against polly database (fuzzy match on name/display_name). Return list of politician IDs",
+          "completed": false
+        },
+        {
+          "id": "3.5",
+          "name": "Build story creation service",
+          "description": "Server service that takes a URL, fetches metadata, checks for URL dedup, runs AI relevance filter, extracts pollies, creates story + story_politicians records. Used by both RSS ingestion and user submission",
+          "completed": false
+        },
+        {
+          "id": "3.6",
+          "name": "Build RSS cron worker",
+          "description": "Cloudflare Cron Trigger that runs every 15 minutes. Iterates active RSS feeds, fetches new articles since last poll, runs each through story creation service. Updates last_polled_at and last_article_guid. Implements error backoff. Test locally with wrangler dev --test-scheduled",
+          "completed": false
+        },
+        {
+          "id": "3.7",
+          "name": "Build RSS feed admin management API",
+          "description": "CRUD endpoints for RSS feeds: list, add, edit, pause/resume, delete. Used by admin panel",
+          "completed": false
+        },
+        {
+          "id": "3.8",
+          "name": "Test RSS pipeline locally end-to-end",
+          "description": "Trigger cron manually, verify: feeds polled, articles fetched, AI filters applied, stories created with polly links, duplicates rejected. All against local D1",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "id": "phase-4",
+      "name": "Story Display & User Submission",
+      "description": "Story cards, feed pages, and user story submission",
+      "tasks": [
+        {
+          "id": "4.1",
+          "name": "Build story card component",
+          "description": "Vue component showing: thumbnail, headline, source name, published date, linked polly names/photos, vote counts (pass/fail bar), vote buttons. Compact and scannable",
+          "completed": false
+        },
+        {
+          "id": "4.2",
+          "name": "Build feed API endpoint",
+          "description": "GET /api/stories - returns paginated stories sorted by hot score. Accept params: sort (hot/new/most-voted), filter (party/chamber/state/electorate), page, limit. Hot score: log10(votes) + (age_hours / -decay_factor)",
+          "completed": false
+        },
+        {
+          "id": "4.3",
+          "name": "Build home feed page",
+          "description": "Main page showing story cards from feed API. Sort toggle (Hot/New/Most Voted). Filter sidebar/dropdown. Infinite scroll or pagination. Highlight stories for user's local MP and state senators",
+          "completed": false
+        },
+        {
+          "id": "4.4",
+          "name": "Build user story submission flow",
+          "description": "Submit page: URL input field. On submit, call API that fetches metadata, shows preview (headline, thumbnail, source), shows AI-suggested polly links with ability to adjust. Confirm to publish. Rate limited to 10/day, blocked for accounts < 48hrs old",
+          "completed": false
+        },
+        {
+          "id": "4.5",
+          "name": "Build story detail page",
+          "description": "Full story view: headline, description, thumbnail, source link, published date, all linked pollies with photos, full vote tally, vote buttons. If part of a cluster, show all source articles",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "id": "phase-5",
+      "name": "Voting System",
+      "description": "Pass/fail voting with aggregation",
+      "tasks": [
+        {
+          "id": "5.1",
+          "name": "Build vote API endpoints",
+          "description": "POST /api/votes - cast or change vote (user_id, cluster_id, vote). DELETE /api/votes - remove vote. Server-side enforcement of one vote per user per story via unique constraint. Record ip_hash with vote",
+          "completed": false
+        },
+        {
+          "id": "5.2",
+          "name": "Build vote UI interaction",
+          "description": "Pass/Fail buttons on story cards and detail page. Optimistic UI update. Show current user's vote state (highlighted button). Require auth — prompt login if not authenticated",
+          "completed": false
+        },
+        {
+          "id": "5.3",
+          "name": "Build vote aggregation queries",
+          "description": "Efficient queries for: total pass/fail per story, per polly (across all linked stories), pass percentage. Consider caching aggregates in KV for hot stories",
+          "completed": false
+        },
+        {
+          "id": "5.4",
+          "name": "Implement vote rate limiting",
+          "description": "Max 50 votes per hour per account via KV counter. New accounts (< 24hrs): max 10 votes. Return 429 with retry-after header when exceeded",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "id": "phase-6",
+      "name": "Politician Pages & Leaderboard",
+      "description": "Polly profiles, approval ratings, and rankings",
+      "tasks": [
+        {
+          "id": "6.1",
+          "name": "Build polly profile page",
+          "description": "Page at /polly/[id]: photo, name, party, electorate/state, chamber. Overall approval percentage (big, prominent). List of linked stories with vote tallies, sorted by recency. Filterable by time period",
+          "completed": false
+        },
+        {
+          "id": "6.2",
+          "name": "Build polly listing page",
+          "description": "Page at /pollies: grid/list of all politicians with photos, names, party, approval rating. Filterable by party, chamber, state. Searchable by name",
+          "completed": false
+        },
+        {
+          "id": "6.3",
+          "name": "Build leaderboard page",
+          "description": "Page at /leaderboard: ranked list of pollies by approval rating. Tabs: highest approval, lowest approval. Filterable by party, chamber, state. Show rank, photo, name, party, approval %",
+          "completed": false
+        },
+        {
+          "id": "6.4",
+          "name": "Build polly approval aggregation",
+          "description": "API endpoint GET /api/politicians/[id]/approval - returns current approval %, total votes. Aggregates across all linked story clusters. Cache result in KV with short TTL",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "id": "phase-7",
+      "name": "Anti-Manipulation & Rate Limiting",
+      "description": "Fraud prevention and abuse protection",
+      "tasks": [
+        {
+          "id": "7.1",
+          "name": "Implement IP-based account creation rate limiting",
+          "description": "KV counter per IP hash: max 3 accounts per 24hrs. Return 429 on excess. Better Auth hook to check before account creation",
+          "completed": false
+        },
+        {
+          "id": "7.2",
+          "name": "Implement new account restrictions",
+          "description": "Server middleware checks account age via user_profiles.created_at. < 24hrs: max 10 votes/day. < 48hrs: cannot submit stories. Enforced at API level",
+          "completed": false
+        },
+        {
+          "id": "7.3",
+          "name": "Implement story submission rate limiting",
+          "description": "KV counter per user: max 10 submissions per 24hrs",
+          "completed": false
+        },
+        {
+          "id": "7.4",
+          "name": "Implement IP tracking on votes",
+          "description": "Store hashed IP with each vote. Build query to detect anomalous IP clusters (many votes from same IP across different accounts)",
+          "completed": false
+        },
+        {
+          "id": "7.5",
+          "name": "Implement disposable email blocking",
+          "description": "For magic link auth: block disposable email domains. Maintain blocklist of known disposable providers. Check on magic link request",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "id": "phase-8",
+      "name": "Admin Panel",
+      "description": "Minimal admin interface for solo moderation",
+      "tasks": [
+        {
+          "id": "8.1",
+          "name": "Build admin route protection",
+          "description": "Server middleware protecting /admin/* routes. Checks is_admin flag on user_profiles. Reuses Better Auth session — no separate admin login",
+          "completed": false
+        },
+        {
+          "id": "8.2",
+          "name": "Build story moderation queue",
+          "description": "Admin page showing Tier 3 stories pending moderation. Approve/reject buttons. Show story metadata and source domain",
+          "completed": false
+        },
+        {
+          "id": "8.3",
+          "name": "Build source management page",
+          "description": "Admin page to list all sources, add new source, change tier, toggle active/inactive. Manage RSS feeds per source (add/edit/pause/delete feeds)",
+          "completed": false
+        },
+        {
+          "id": "8.4",
+          "name": "Build politician management page",
+          "description": "Admin page to list/edit/add/deactivate politicians. Edit name, party, electorate, photo URL, status",
+          "completed": false
+        },
+        {
+          "id": "8.5",
+          "name": "Build user management page",
+          "description": "Admin page to list users, view account details (electorate, created date, vote count, linked OAuth providers), ban/suspend accounts",
+          "completed": false
+        },
+        {
+          "id": "8.6",
+          "name": "Build basic analytics dashboard",
+          "description": "Admin page showing: stories ingested today, votes today, new registrations today, active RSS feeds, feed error count. Simple counters",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "id": "phase-9",
+      "name": "Local Testing & Polish",
+      "description": "Comprehensive local testing before any production deployment",
+      "tasks": [
+        {
+          "id": "9.1",
+          "name": "Full integration test locally",
+          "description": "End-to-end walkthrough of all user flows locally: register, onboard, browse feed, vote, view polly profiles, submit story, admin moderation. Fix any issues",
+          "completed": false
+        },
+        {
+          "id": "9.2",
+          "name": "Mobile responsiveness testing",
+          "description": "Test all pages at mobile breakpoints. Fix layout issues. Ensure vote buttons are tap-friendly",
+          "completed": false
+        },
+        {
+          "id": "9.3",
+          "name": "SEO and meta tags",
+          "description": "Add appropriate meta tags, OpenGraph tags for sharing polly profiles and stories on social media. Nuxt SEO composables",
+          "completed": false
+        },
+        {
+          "id": "9.4",
+          "name": "Error handling and edge cases",
+          "description": "Handle: failed RSS fetches gracefully, OAuth errors, rate limit UX (show friendly message), empty states (no stories yet, no votes yet), 404 pages",
+          "completed": false
+        },
+        {
+          "id": "9.5",
+          "name": "Create terms of service and privacy policy pages",
+          "description": "Static pages with ToS (votes are opinion, no manipulation) and privacy policy (Australian Privacy Act compliant, data collected, no data sold)",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "id": "phase-10",
+      "name": "Production Deployment",
+      "description": "Deploy to Cloudflare production",
+      "tasks": [
+        {
+          "id": "10.1",
+          "name": "Set up Cloudflare account and resources",
+          "description": "Create Cloudflare account (if needed). Create D1 database (production), KV namespaces (rate-limits). Enable Workers AI",
+          "completed": false
+        },
+        {
+          "id": "10.2",
+          "name": "Configure production secrets",
+          "description": "Set secrets via wrangler: Google OAuth client ID/secret, Apple OAuth client ID/secret, Resend API key, Turnstile secret key, Better Auth secret",
+          "completed": false
+        },
+        {
+          "id": "10.3",
+          "name": "Run production database migrations and seed",
+          "description": "Apply Drizzle migrations to production D1. Run seed scripts for electorates, politicians, sources, RSS feeds",
+          "completed": false
+        },
+        {
+          "id": "10.4",
+          "name": "Deploy to Cloudflare Pages",
+          "description": "Connect git repo to Cloudflare Pages or deploy via wrangler pages deploy. Configure build command and output directory. Verify deployment",
+          "completed": false
+        },
+        {
+          "id": "10.5",
+          "name": "Configure custom domain",
+          "description": "Register domain (pubtest.com.au or similar). Point DNS to Cloudflare Pages. Configure SSL. Update OAuth callback URLs to production domain",
+          "completed": false
+        },
+        {
+          "id": "10.6",
+          "name": "Smoke test production",
+          "description": "Verify: OAuth login, onboarding, RSS ingestion running, stories appearing, voting works, polly pages load, admin panel accessible",
+          "completed": false
+        },
+        {
+          "id": "10.7",
+          "name": "Create admin account",
+          "description": "Login via OAuth, manually set is_admin=true on user_profiles record in production D1",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "id": "phase-11",
+      "name": "Post-MVP: Story Clustering & Dedup",
+      "description": "AI-powered grouping of related stories",
+      "tasks": [
+        {
+          "id": "11.1",
+          "name": "Build story embedding generation",
+          "description": "On story creation, generate text embedding of headline+description via Workers AI. Store embedding in stories table or separate table",
+          "completed": false
+        },
+        {
+          "id": "11.2",
+          "name": "Build clustering service",
+          "description": "Compare new story embedding against recent stories (cosine similarity). If similarity > threshold, assign to existing cluster. Otherwise create new cluster",
+          "completed": false
+        },
+        {
+          "id": "11.3",
+          "name": "Build cluster UI",
+          "description": "Story cards show cluster badge if multiple sources. Expandable to see all articles in cluster. Votes shown at cluster level",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "id": "phase-12",
+      "name": "Post-MVP: Historical Trends",
+      "description": "Time-series tracking of polly approval ratings",
+      "tasks": [
+        {
+          "id": "12.1",
+          "name": "Build daily stats snapshot cron",
+          "description": "Cloudflare Cron Trigger running once daily. For each politician, calculate current approval %, total votes, pass/fail counts. Insert into polly_daily_stats",
+          "completed": false
+        },
+        {
+          "id": "12.2",
+          "name": "Build trend API endpoint",
+          "description": "GET /api/politicians/[id]/trend?period=30d - returns time series of daily approval data. Support 30d, 90d, 1y, all periods",
+          "completed": false
+        },
+        {
+          "id": "12.3",
+          "name": "Build trend chart component",
+          "description": "Chart.js line graph on polly profile page. X-axis: dates, Y-axis: approval %. Selectable time range. Responsive",
+          "completed": false
+        },
+        {
+          "id": "12.4",
+          "name": "Build leaderboard movers",
+          "description": "Add 'most improved' and 'biggest drop' sections to leaderboard. Compare current approval to 30 days ago",
+          "completed": false
+        },
+        {
+          "id": "12.5",
+          "name": "Build party aggregate trends",
+          "description": "Average approval per party over time. Party-level trend chart. 'Parliament mood' overall trend",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "id": "phase-13",
+      "name": "Post-MVP: Advanced Fraud Detection",
+      "description": "Automated detection of vote manipulation",
+      "tasks": [
+        {
+          "id": "13.1",
+          "name": "Build IP cluster detection",
+          "description": "Scheduled job to identify accounts sharing IPs that vote in similar patterns. Flag for admin review",
+          "completed": false
+        },
+        {
+          "id": "13.2",
+          "name": "Build voting pattern analysis",
+          "description": "Detect accounts that vote in lockstep (same votes on same stories within short timeframes). Flag suspicious accounts",
+          "completed": false
+        },
+        {
+          "id": "13.3",
+          "name": "Build admin fraud dashboard",
+          "description": "Admin page showing flagged accounts, IP clusters, suspicious voting patterns. Bulk ban and bulk vote reversal tools",
+          "completed": false
+        }
+      ]
+    }
+  ]
+}

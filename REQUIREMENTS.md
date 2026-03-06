@@ -16,23 +16,26 @@ A web application that surfaces media stories about Australian federal politicia
 ## 1. Users ("Punters")
 
 ### 1.1 Registration
-- Email + password
-- Email verification (click link to activate)
+- **Better Auth** with OAuth providers (Google, Apple) and/or magic link (email)
+- No passwords stored in our database — zero credential risk on breach
 - CAPTCHA on registration (Cloudflare Turnstile — free)
 - Must declare they are 18+ (checkbox, not verified beyond declaration)
-- Must select federal electorate from searchable dropdown
+- Must select federal electorate from searchable dropdown (post-OAuth onboarding step)
 - Rate limit: max 3 account creations per IP per 24 hours
+- Email stored for magic link delivery; no other PII stored beyond electorate choice
 
 ### 1.2 Profile & Settings
 - Change electorate
-- Change password
 - Delete account (soft-delete, retain anonymised vote data for integrity)
 - No public profile — punters are anonymous
 
 ### 1.3 Authentication
-- Email/password login
-- Session-based auth stored in Cloudflare KV
-- Password reset via email
+- **Better Auth** (`better-auth` + `@better-auth/nuxt`)
+- OAuth providers: Google, Apple (covers vast majority of Australians)
+- Magic link as fallback (for users without Google/Apple accounts)
+- Sessions managed by Better Auth (stored in D1 via Drizzle adapter)
+- No passwords, no password reset flow needed
+- Better Auth handles session tokens, CSRF protection, token refresh
 
 ---
 
@@ -276,10 +279,10 @@ Stories enter the system via two channels:
 | **Hosting** | Cloudflare Pages | Free tier: unlimited requests, bandwidth, sites |
 | **API/Backend** | Cloudflare Workers (via Nitro) | Free tier: 100K requests/day. Nuxt's Nitro engine deploys natively |
 | **Database** | Cloudflare D1 (SQLite) | Free tier: 5M reads/day, 100K writes/day, 5GB storage |
-| **Session/Cache** | Cloudflare KV | Free tier: 100K reads/day, 1K writes/day |
+| **Auth** | Better Auth | OAuth (Google/Apple) + magic link. No passwords stored. D1 adapter via Drizzle |
 | **Rate Limiting** | Cloudflare KV + Workers | IP tracking and rate limit counters |
 | **CAPTCHA** | Cloudflare Turnstile | Free, privacy-friendly, integrates natively |
-| **Email** | Resend (or Mailgun free tier) | Verification and password reset emails |
+| **Email** | Resend (free tier: 3K emails/mo) | Magic link delivery only (no password resets needed) |
 | **AI (dedup/linking)** | Cloudflare Workers AI | Free tier includes inference on open models |
 | **RSS Ingestion** | Cloudflare Workers Cron Triggers | Free tier includes cron triggers. Polls feeds on schedule |
 | **Charts** | Chart.js or lightweight alternative | Trend visualisation, client-side rendering |
@@ -314,9 +317,17 @@ Stories enter the system via two channels:
 ### 11.1 Core Tables (D1/SQLite)
 
 ```
-users
-  id, email_hash, password_hash, electorate_id, is_verified,
-  created_at, last_active, status, ip_hash
+-- Better Auth managed tables (auto-created by Better Auth)
+user              -- id, name, email, emailVerified, image, createdAt, updatedAt
+session           -- id, expiresAt, token, ipAddress, userAgent, userId
+account           -- id, accountId, providerId, userId, accessToken, refreshToken, ...
+verification      -- id, identifier, value, expiresAt, createdAt, updatedAt
+
+-- App-specific user extension
+user_profiles
+  user_id (FK to Better Auth user.id), electorate_id,
+  is_admin, created_at, last_active, status, ip_hash,
+  onboarding_complete (boolean — has user selected electorate?)
 
 electorates
   id, name, state, chamber
