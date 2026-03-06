@@ -9,15 +9,12 @@ export default defineNuxtConfig({
     preset: 'cloudflare-pages',
   },
 
-  // Future: add runtimeConfig for secrets
-  // runtimeConfig: {
-  //   betterAuthSecret: '',
-  //   googleClientId: '',
-  //   googleClientSecret: '',
-  //   resendApiKey: '',
-  //   turnstileSecretKey: '',
-  //   public: {
-  //     turnstileSiteKey: '',
-  //   },
-  // },
+  runtimeConfig: {
+    public: {
+      auth: {
+        redirectGuestTo: '/login',
+        redirectUserTo: '/',
+      },
+    },
+  },
 })
