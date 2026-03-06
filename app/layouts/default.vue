@@ -13,6 +13,7 @@ const { loggedIn, user, signOut } = useAuth()
           <UButton to="/" variant="ghost" label="Feed" />
           <UButton to="/pollies" variant="ghost" label="Pollies" />
           <UButton to="/leaderboard" variant="ghost" label="Leaderboard" />
+          <UButton to="/map" variant="ghost" label="Map" />
           <template v-if="loggedIn">
             <UButton to="/settings" variant="ghost" :label="user?.name || 'Account'" />
             <UButton variant="soft" label="Sign out" @click="signOut('/')" />
