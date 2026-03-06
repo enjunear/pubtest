@@ -282,49 +282,49 @@
           "id": "6.1",
           "name": "Build polly profile page",
           "description": "Page at /polly/[id]: photo, name, party, electorate/state, chamber. Overall approval percentage (big, prominent). List of linked stories with vote tallies, sorted by recency. Filterable by time period",
-          "completed": false
+          "completed": true
         },
         {
           "id": "6.2",
           "name": "Build polly listing page",
           "description": "Page at /pollies: grid/list of all politicians with photos, names, party, approval rating. Filterable by party, chamber, state. Searchable by name",
-          "completed": false
+          "completed": true
         },
         {
           "id": "6.3",
           "name": "Build leaderboard page",
           "description": "Page at /leaderboard: ranked list of pollies by approval rating. Tabs: highest approval, lowest approval. Filterable by party, chamber, state. Show rank, photo, name, party, approval %",
-          "completed": false
+          "completed": true
         },
         {
           "id": "6.4",
           "name": "Build polly approval aggregation",
           "description": "API endpoint GET /api/politicians/[id]/approval - returns current approval %, total votes. Aggregates across all linked story clusters. Cache result in KV with short TTL",
-          "completed": false
+          "completed": true
         },
         {
           "id": "6.5",
           "name": "Create electorate hex cartogram layout",
           "description": "Build a hex cartogram data file mapping each of 151 electorates to a hex grid position (col, row) placed roughly by geographic location. One hex per seat gives equal visual weight. Fall back to AEC GeoJSON boundary map if hex layout proves too complex",
-          "completed": false
+          "completed": true
         },
         {
           "id": "6.6",
           "name": "Build electorate heatmap component",
           "description": "Interactive hex cartogram (or GeoJSON fallback) coloured by MP approval rating. Green=high, red=low. Hover shows electorate name, MP, party, approval %. Click navigates to polly profile. SVG-based for lightweight rendering",
-          "completed": false
+          "completed": true
         },
         {
           "id": "6.7",
           "name": "Build heatmap API endpoint",
           "description": "GET /api/heatmap - returns array of { electorateId, electorateName, politicianId, politicianName, party, approvalPct } for all current House members. Cache in KV",
-          "completed": false
+          "completed": true
         },
         {
           "id": "6.8",
           "name": "Add heatmap to leaderboard or dedicated page",
           "description": "Integrate electorate heatmap into leaderboard page or create /map page. Responsive for mobile (zoomable/scrollable). Legend showing approval colour scale",
-          "completed": false
+          "completed": true
         }
       ]
     },
