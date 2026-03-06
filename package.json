@@ -1,0 +1,33 @@
+{
+  "name": "the-pub-test",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "@prisma/engines",
+      "esbuild",
+      "prisma",
+      "vue-demi"
+    ]
+  },
+  "dependencies": {
+    "@nuxt/ui": "^4.5.1",
+    "better-auth": "^1.5.4",
+    "drizzle-orm": "^0.45.1",
+    "nuxt": "^4.3.1",
+    "vue": "^3.5.29",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.9",
+    "wrangler": "^4.71.0"
+  }
+}

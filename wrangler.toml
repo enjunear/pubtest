@@ -1,0 +1,17 @@
+name = "the-pub-test"
+compatibility_date = "2025-07-15"
+
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "pubtest-db"
+database_id = "local"  # Will be replaced with real ID for production
+
+# KV Namespace for rate limiting
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "local"  # Will be replaced with real ID for production
+
+# Workers AI
+[ai]
+binding = "AI"
