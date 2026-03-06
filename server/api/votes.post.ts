@@ -23,9 +23,20 @@ export default defineEventHandler(async (event) => {
     ? (Date.now() - new Date(profile.createdAt).getTime()) / 3600000
     : 0
 
-  // Rate limit: 10/hr for accounts < 24hrs old, 50/hr otherwise
-  const maxVotesPerHour = accountAgeHours < 24 ? 10 : 50
-  const rateCheck = await checkRateLimit(event, 'vote', userId, maxVotesPerHour, 3600)
+  // New accounts (<24hrs): max 10 votes per day
+  if (accountAgeHours < 24) {
+    const dailyCheck = await checkRateLimit(event, 'vote-new', userId, 10, 86400)
+    if (!dailyCheck.allowed) {
+      throw createError({
+        statusCode: 429,
+        message: 'New accounts are limited to 10 votes per day. Try again tomorrow.',
+        data: { retryAfter: dailyCheck.retryAfter },
+      })
+    }
+  }
+
+  // All accounts: max 50 votes per hour
+  const rateCheck = await checkRateLimit(event, 'vote', userId, 50, 3600)
 
   if (!rateCheck.allowed) {
     throw createError({
