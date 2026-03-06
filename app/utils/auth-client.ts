@@ -1,4 +1,5 @@
 import { createAuthClient } from 'better-auth/vue'
+import { magicLinkClient } from 'better-auth/client/plugins'
 
 export function useAuthClient() {
   const url = useRequestURL()
@@ -7,5 +8,6 @@ export function useAuthClient() {
   return createAuthClient({
     baseURL: url.origin,
     fetchOptions: { headers },
+    plugins: [magicLinkClient()],
   })
 }
