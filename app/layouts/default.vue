@@ -1,3 +1,7 @@
+<script setup lang="ts">
+const { loggedIn, user, signOut } = useAuth()
+</script>
+
 <template>
   <UApp>
     <UContainer>
@@ -9,7 +13,11 @@
           <UButton to="/" variant="ghost" label="Feed" />
           <UButton to="/pollies" variant="ghost" label="Pollies" />
           <UButton to="/leaderboard" variant="ghost" label="Leaderboard" />
-          <UButton to="/login" variant="soft" label="Login" />
+          <template v-if="loggedIn">
+            <UButton to="/settings" variant="ghost" :label="user?.name || 'Account'" />
+            <UButton variant="soft" label="Sign out" @click="signOut('/')" />
+          </template>
+          <UButton v-else to="/login" variant="soft" label="Sign in" />
         </nav>
       </header>
 

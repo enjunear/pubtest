@@ -3,21 +3,25 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
-  modules: ['@nuxt/ui'],
+  modules: ['@nuxt/ui', '@nuxtjs/turnstile'],
+
+  turnstile: {
+    siteKey: '1x00000000000000000000AA',
+  },
 
   nitro: {
     preset: 'cloudflare-pages',
   },
 
-  // Future: add runtimeConfig for secrets
-  // runtimeConfig: {
-  //   betterAuthSecret: '',
-  //   googleClientId: '',
-  //   googleClientSecret: '',
-  //   resendApiKey: '',
-  //   turnstileSecretKey: '',
-  //   public: {
-  //     turnstileSiteKey: '',
-  //   },
-  // },
+  runtimeConfig: {
+    turnstile: {
+      secretKey: '1x0000000000000000000000000000000AA',
+    },
+    public: {
+      auth: {
+        redirectGuestTo: '/login',
+        redirectUserTo: '/',
+      },
+    },
+  },
 })
