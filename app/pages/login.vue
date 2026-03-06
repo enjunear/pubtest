@@ -5,6 +5,7 @@ const { client } = useAuth()
 const loading = ref(false)
 const magicLinkSent = ref(false)
 const errorMessage = ref('')
+const turnstileToken = ref('')
 
 const providers = [
   {
@@ -30,11 +31,18 @@ const fields = [
 ]
 
 async function onSubmit(payload: { data: { email: string } }) {
+  if (!turnstileToken.value) {
+    errorMessage.value = 'Please complete the verification.'
+    return
+  }
   loading.value = true
   errorMessage.value = ''
   const { error } = await client.signIn.magicLink({
     email: payload.data.email,
     callbackURL: '/',
+    fetchOptions: {
+      headers: { 'x-turnstile-token': turnstileToken.value },
+    },
   })
   loading.value = false
   if (error) {
@@ -62,16 +70,20 @@ async function onSubmit(payload: { data: { email: string } }) {
         />
       </div>
 
-      <UAuthForm
-        v-else
-        title="Sign in to The Pub Test"
-        description="Sign in with your Google account or email"
-        :providers="providers"
-        :fields="fields"
-        :loading="loading"
-        :submit="{ label: 'Send magic link' }"
-        @submit="onSubmit"
-      />
+      <template v-else>
+        <UAuthForm
+          title="Sign in to The Pub Test"
+          description="Sign in with your Google account or email"
+          :providers="providers"
+          :fields="fields"
+          :loading="loading"
+          :submit="{ label: 'Send magic link' }"
+          @submit="onSubmit"
+        />
+        <div class="mt-4 flex justify-center">
+          <NuxtTurnstile v-model="turnstileToken" />
+        </div>
+      </template>
 
       <UAlert
         v-if="errorMessage"
