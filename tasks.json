@@ -12,37 +12,37 @@
           "id": "0.1",
           "name": "Initialise Nuxt 3 project",
           "description": "Scaffold Nuxt 3 project with TypeScript, configure nuxt.config.ts with cloudflare-pages preset via Nitro",
-          "completed": false
+          "completed": true
         },
         {
           "id": "0.2",
           "name": "Configure Cloudflare bindings for local dev",
           "description": "Set up wrangler.toml with D1 database binding, KV namespace bindings (rate-limits), and Workers AI binding. All pointing to local dev resources",
-          "completed": false
+          "completed": true
         },
         {
           "id": "0.3",
           "name": "Install core dependencies",
           "description": "Install: nuxt-ui (component library), drizzle-orm + drizzle-kit (D1 ORM + migrations), better-auth + @better-auth/nuxt, chart.js, and dev tooling",
-          "completed": false
+          "completed": true
         },
         {
           "id": "0.4",
           "name": "Set up D1 database with Drizzle ORM",
           "description": "Define Drizzle schema, configure drizzle-kit for D1 migrations, create initial migration. Run locally with wrangler d1",
-          "completed": false
+          "completed": true
         },
         {
           "id": "0.5",
           "name": "Create base layout and app shell",
           "description": "Header with nav (Home, Pollies, Leaderboard, Login), footer, responsive mobile layout, dark/light mode toggle",
-          "completed": false
+          "completed": true
         },
         {
           "id": "0.6",
           "name": "Verify local dev environment end-to-end",
           "description": "Confirm Nuxt dev server works with local D1, KV, and AI bindings via wrangler dev. Ensure hot reload works. Document local dev setup in README",
-          "completed": false
+          "completed": true
         }
       ]
     },
@@ -55,37 +55,37 @@
           "id": "1.1",
           "name": "Create database schema - Better Auth tables",
           "description": "Drizzle schema for Better Auth managed tables: user, session, account, verification. These are created/managed by Better Auth but defined in Drizzle for type safety",
-          "completed": false
+          "completed": true
         },
         {
           "id": "1.2",
           "name": "Create database schema - app tables",
           "description": "Drizzle schema for: user_profiles, electorates, politicians, sources, rss_feeds, stories, story_clusters, story_politicians, votes, polly_daily_stats, admin_log. Apply migration to local D1",
-          "completed": false
+          "completed": true
         },
         {
           "id": "1.3",
           "name": "Create indexes",
           "description": "Add indexes: votes(user_id, cluster_id) unique, stories(url_hash) unique, stories(status, submitted_at), story_politicians(politician_id), polly_daily_stats(politician_id, date), user_profiles(user_id) unique",
-          "completed": false
+          "completed": true
         },
         {
           "id": "1.4",
           "name": "Seed electorates data",
           "description": "Source all 151 federal electorates from AEC data with state/territory mapping. Create seed script that runs against local D1",
-          "completed": false
+          "completed": true
         },
         {
           "id": "1.5",
           "name": "Seed politicians data",
           "description": "Source current federal MPs and Senators from APH/OpenAustralia. Include: name, party, chamber, electorate/state, photo URL. Create seed script",
-          "completed": false
+          "completed": true
         },
         {
           "id": "1.6",
           "name": "Seed news sources and RSS feeds",
           "description": "Create seed data for Tier 1 sources (domain, name, tier) and their RSS feed URLs (ABC Politics, Guardian AU, SMH Federal, SBS Politics, The Conversation, etc.) with poll intervals",
-          "completed": false
+          "completed": true
         }
       ]
     },
