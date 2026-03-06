@@ -185,6 +185,15 @@ Stories enter the system via two channels:
 - Filterable by party, chamber, state
 - "Most improved" / "biggest drop" (based on trend data)
 
+### 5.4 Electorate Heatmap
+- Interactive map of Australian federal electorates
+- **Preferred: hex cartogram** — one hexagon per electorate, placed roughly by geographic position relative to neighbours. Equal visual weight per seat (avoids large rural electorates dominating). Fall back to geographic GeoJSON map if hex cartogram proves too complex
+- Each electorate coloured by its MP's overall approval rating (heatmap style)
+- Green = high approval, red = low approval, gradient in between
+- Hover/tap shows: electorate name, MP name, party, approval percentage
+- Click navigates to the polly's profile page
+- Visual overview of where the best/worst performers are
+
 ---
 
 ## 6. Historical Tracking & Trends
