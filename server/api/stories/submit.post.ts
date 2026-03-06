@@ -4,6 +4,30 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, message: 'Not authenticated' })
   }
 
+  const userId = session.user.id
+
+  // Check account age: must be > 48 hours to submit stories
+  const profile = await getUserProfile(event, userId)
+  if (profile) {
+    const accountAgeHours = (Date.now() - new Date(profile.createdAt).getTime()) / 3600000
+    if (accountAgeHours < 48) {
+      throw createError({
+        statusCode: 403,
+        message: 'New accounts must wait 48 hours before submitting stories.',
+      })
+    }
+  }
+
+  // Rate limit: max 10 submissions per 24 hours
+  const rateCheck = await checkRateLimit(event, 'submit', userId, 10, 86400)
+  if (!rateCheck.allowed) {
+    throw createError({
+      statusCode: 429,
+      message: 'Submission limit reached (10 per day). Try again later.',
+      data: { retryAfter: rateCheck.retryAfter },
+    })
+  }
+
   const body = await readBody<{ url: string }>(event)
   if (!body.url) {
     throw createError({ statusCode: 400, message: 'URL is required' })
@@ -30,7 +54,7 @@ export default defineEventHandler(async (event) => {
     imageUrl: metadata.imageUrl,
     publishedAt: metadata.publishedAt,
     domain: metadata.domain,
-    submittedBy: session.user.id,
+    submittedBy: userId,
   })
 
   if (result.status === 'duplicate') {
