@@ -29,7 +29,9 @@ CREATE TABLE `admin_log` (
 CREATE TABLE `electorates` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
-	`state` text NOT NULL
+	`state` text NOT NULL,
+	`start_date` text,
+	`end_date` text
 );
 --> statement-breakpoint
 CREATE TABLE `politicians` (

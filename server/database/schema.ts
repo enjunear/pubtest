@@ -96,6 +96,8 @@ export const electorates = sqliteTable('electorates', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
   state: text('state').notNull(),
+  startDate: text('start_date'),
+  endDate: text('end_date'),
 })
 
 export const politicians = sqliteTable('politicians', {
