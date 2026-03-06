@@ -214,31 +214,31 @@
           "id": "4.1",
           "name": "Build story card component",
           "description": "Vue component showing: thumbnail, headline, source name, published date, linked polly names/photos, vote counts (pass/fail bar), vote buttons. Compact and scannable",
-          "completed": false
+          "completed": true
         },
         {
           "id": "4.2",
           "name": "Build feed API endpoint",
           "description": "GET /api/stories - returns paginated stories sorted by hot score. Accept params: sort (hot/new/most-voted), filter (party/chamber/state/electorate), page, limit. Hot score: log10(votes) + (age_hours / -decay_factor)",
-          "completed": false
+          "completed": true
         },
         {
           "id": "4.3",
           "name": "Build home feed page",
           "description": "Main page showing story cards from feed API. Sort toggle (Hot/New/Most Voted). Filter sidebar/dropdown. Infinite scroll or pagination. Highlight stories for user's local MP and state senators",
-          "completed": false
+          "completed": true
         },
         {
           "id": "4.4",
           "name": "Build user story submission flow",
           "description": "Submit page: URL input field. On submit, call API that fetches metadata, shows preview (headline, thumbnail, source), shows AI-suggested polly links with ability to adjust. Confirm to publish. Rate limited to 10/day, blocked for accounts < 48hrs old",
-          "completed": false
+          "completed": true
         },
         {
           "id": "4.5",
           "name": "Build story detail page",
           "description": "Full story view: headline, description, thumbnail, source link, published date, all linked pollies with photos, full vote tally, vote buttons. If part of a cluster, show all source articles",
-          "completed": false
+          "completed": true
         }
       ]
     },
