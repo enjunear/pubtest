@@ -337,31 +337,31 @@
           "id": "7.1",
           "name": "Implement IP-based account creation rate limiting",
           "description": "KV counter per IP hash: max 3 accounts per 24hrs. Return 429 on excess. Better Auth hook to check before account creation",
-          "completed": false
+          "completed": true
         },
         {
           "id": "7.2",
           "name": "Implement new account restrictions",
           "description": "Server middleware checks account age via user_profiles.created_at. < 24hrs: max 10 votes/day. < 48hrs: cannot submit stories. Enforced at API level",
-          "completed": false
+          "completed": true
         },
         {
           "id": "7.3",
           "name": "Implement story submission rate limiting",
           "description": "KV counter per user: max 10 submissions per 24hrs",
-          "completed": false
+          "completed": true
         },
         {
           "id": "7.4",
           "name": "Implement IP tracking on votes",
           "description": "Store hashed IP with each vote. Build query to detect anomalous IP clusters (many votes from same IP across different accounts)",
-          "completed": false
+          "completed": true
         },
         {
           "id": "7.5",
           "name": "Implement disposable email blocking",
           "description": "For magic link auth: block disposable email domains. Maintain blocklist of known disposable providers. Check on magic link request",
-          "completed": false
+          "completed": true
         }
       ]
     },
