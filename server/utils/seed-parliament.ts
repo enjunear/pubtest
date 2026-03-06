@@ -1,8 +1,9 @@
 import { drizzle } from 'drizzle-orm/d1'
-import { eq, count } from 'drizzle-orm'
+import { count } from 'drizzle-orm'
 import { electorates, politicians } from '../database/schema'
 
 const APH_SEARCH_URL = 'https://www.aph.gov.au/Senators_and_Members/Parliamentarian_Search_Results'
+const APH_BASE_URL = 'https://www.aph.gov.au'
 
 const STATE_ABBREVIATIONS: Record<string, string> = {
   'New South Wales': 'NSW',
@@ -16,87 +17,86 @@ const STATE_ABBREVIATIONS: Record<string, string> = {
 }
 
 interface ParsedMember {
+  mpid: string
+  fullName: string
   name: string
   electorate: string
   state: string
   party: string
   chamber: 'house' | 'senate'
-  imageUrl?: string
+  imageUrl: string
 }
 
-function parseMembers(html: string, chamber: 'house' | 'senate'): ParsedMember[] {
+function parseSearchPage(html: string): ParsedMember[] {
   const members: ParsedMember[] = []
 
-  // Match each result card in the search results
-  // The APH page uses <a> tags with class "card-link" for each member
-  const cardRegex = /<div class="row row-bottom-padding"[^>]*>([\s\S]*?)(?=<div class="row row-bottom-padding"|<div class="pagination">|$)/g
-  let match
+  const cards = html.split('<div class="row border-bottom')
+  for (let i = 1; i < cards.length; i++) {
+    const card = cards[i]
 
-  while ((match = cardRegex.exec(html)) !== null) {
-    const card = match[1]
+    const titleMatch = card.match(/MPID=([^"]+)"[^>]*>([^<]+)<\/a>/)
+    if (!titleMatch) continue
 
-    // Extract name from title link
-    const nameMatch = card.match(/class="title"[^>]*>([^<]+)</i)
-    if (!nameMatch) continue
+    const mpid = titleMatch[1]
+    const fullName = titleMatch[2].trim()
 
-    // Clean name: remove titles like "Hon", "Dr", "MP", "Senator"
-    let name = nameMatch[1].trim()
-      .replace(/^(Hon\s+|Senator\s+|The\s+Hon\s+|Dr\s+|Mr\s+|Mrs\s+|Ms\s+|Miss\s+)+/gi, '')
-      .replace(/\s+(MP|OAM|AC|AO|QC|SC|KC)$/gi, '')
+    // Determine chamber from title: Senators have "Senator" prefix, House members have "MP" suffix
+    const isSenator = /^Senator\s/i.test(fullName)
+    const chamber: 'house' | 'senate' = isSenator ? 'senate' : 'house'
+
+    // Clean name: remove honorifics and suffixes
+    const name = fullName
+      .replace(/^(Senator\s+the\s+Hon\s+|The\s+Hon\s+|Hon\s+|Senator\s+|Dr\s+|Mr\s+|Mrs\s+|Ms\s+|Miss\s+|Prof\s+)+/gi, '')
+      .replace(/\s+(MP|OAM|AC|AO|QC|SC|KC|AM|PSM)(,?\s*(MP|OAM|AC|AO|QC|SC|KC|AM|PSM))*$/gi, '')
       .trim()
 
-    // Extract electorate/representing info
-    const representingMatch = card.match(/Member for ([^<,]+)/i)
-      || card.match(/Senator for ([^<,]+)/i)
-      || card.match(/Representing ([^<,]+)/i)
-    const electorate = representingMatch ? representingMatch[1].trim() : ''
+    // Extract electorate and state from "For" field
+    // House: "Calwell, Victoria"  |  Senate: "Victoria"
+    const forMatch = card.match(/<dt>For<\/dt>\s*<dd>([^<]+)<\/dd>/)
+    let electorate = ''
+    let stateAbbr = ''
+    if (forMatch) {
+      const parts = forMatch[1].split(',').map(s => s.trim())
+      if (chamber === 'house' && parts.length >= 2) {
+        electorate = parts[0]
+        stateAbbr = STATE_ABBREVIATIONS[parts[parts.length - 1]] || parts[parts.length - 1]
+      } else {
+        // Senator or single value — it's just the state
+        const stateName = parts[parts.length - 1]
+        stateAbbr = STATE_ABBREVIATIONS[stateName] || stateName
+      }
+    }
 
-    // Extract state
-    const stateMatch = card.match(/(?:,\s*)((?:New South Wales|Victoria|Queensland|Western Australia|South Australia|Tasmania|Australian Capital Territory|Northern Territory))/i)
-    const stateAbbr = stateMatch ? STATE_ABBREVIATIONS[stateMatch[1]] || stateMatch[1] : ''
-
-    // Extract party
-    const partyMatch = card.match(/class="party"[^>]*>([^<]+)/i)
-      || card.match(/party[^>]*>([^<]+)/i)
+    const partyMatch = card.match(/<dt>Party<\/dt>\s*<dd>([^<]+)<\/dd>/)
     const party = partyMatch ? partyMatch[1].trim() : 'Unknown'
 
-    // Extract image URL
-    const imageMatch = card.match(/src="(https:\/\/parlinfo[^"]+)"/i)
-    const imageUrl = imageMatch ? imageMatch[1] : undefined
+    const imageUrl = `${APH_BASE_URL}/api/parliamentarian/${mpid}/image`
 
-    if (name && (electorate || chamber === 'senate')) {
-      members.push({
-        name,
-        electorate,
-        state: stateAbbr,
-        party,
-        chamber,
-        imageUrl,
-      })
-    }
+    members.push({ mpid, fullName, name, electorate, state: stateAbbr, party, chamber, imageUrl })
   }
 
   return members
 }
 
-async function fetchAllMembers(chamber: 'house' | 'senate'): Promise<ParsedMember[]> {
-  const memParam = chamber === 'house' ? '1' : '2'
+async function fetchAllMembers(): Promise<ParsedMember[]> {
   const allMembers: ParsedMember[] = []
   let page = 1
   const pageSize = 96
 
   while (true) {
-    const url = `${APH_SEARCH_URL}?expand=1&q=&mem=${memParam}&par=-1&gen=0&ps=${pageSize}&st=1&page=${page}`
-    const response = await fetch(url)
+    const url = `${APH_SEARCH_URL}?expand=1&q=&par=-1&gen=0&ps=${pageSize}&st=1&page=${page}`
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; ThePubTest/1.0)' },
+    })
+
     if (!response.ok) break
 
     const html = await response.text()
-    const members = parseMembers(html, chamber)
+    const members = parseSearchPage(html)
 
     if (members.length === 0) break
     allMembers.push(...members)
 
-    // Check if there are more pages
     if (!html.includes(`page=${page + 1}`)) break
     page++
   }
@@ -114,16 +114,13 @@ export async function seedParliament(db: ReturnType<typeof drizzle>) {
 
   console.log('Seeding parliament data from APH...')
 
-  // Fetch House of Representatives members
-  const houseMembers = await fetchAllMembers('house')
-  console.log(`Fetched ${houseMembers.length} House members`)
-
-  // Fetch Senators
-  const senateMembers = await fetchAllMembers('senate')
-  console.log(`Fetched ${senateMembers.length} Senators`)
+  const allMembers = await fetchAllMembers()
+  const houseMembers = allMembers.filter(m => m.chamber === 'house')
+  const senateMembers = allMembers.filter(m => m.chamber === 'senate')
+  console.log(`Fetched ${houseMembers.length} House members, ${senateMembers.length} Senators`)
 
   // Extract unique electorates from House members
-  const electorateMap = new Map<string, string>() // name -> state
+  const electorateMap = new Map<string, string>()
   for (const member of houseMembers) {
     if (member.electorate && member.state) {
       electorateMap.set(member.electorate, member.state)
@@ -145,7 +142,7 @@ export async function seedParliament(db: ReturnType<typeof drizzle>) {
   const allElectorates = await db.select().from(electorates)
   const electorateIdMap = new Map(allElectorates.map(e => [e.name, e.id]))
 
-  // Insert politicians (House members)
+  // Insert House members
   for (const member of houseMembers) {
     await db.insert(politicians).values({
       name: member.name,
@@ -154,12 +151,12 @@ export async function seedParliament(db: ReturnType<typeof drizzle>) {
       chamber: 'house',
       electorateId: electorateIdMap.get(member.electorate) || null,
       state: member.state,
-      photoUrl: member.imageUrl || null,
+      photoUrl: member.imageUrl,
     })
   }
   console.log(`Inserted ${houseMembers.length} House members`)
 
-  // Insert politicians (Senators)
+  // Insert Senators
   for (const member of senateMembers) {
     await db.insert(politicians).values({
       name: member.name,
@@ -167,10 +164,12 @@ export async function seedParliament(db: ReturnType<typeof drizzle>) {
       party: member.party,
       chamber: 'senate',
       state: member.state,
-      photoUrl: member.imageUrl || null,
+      photoUrl: member.imageUrl,
     })
   }
   console.log(`Inserted ${senateMembers.length} Senators`)
 
   console.log('Parliament seeding complete')
 }
+
+export { fetchAllMembers, parseSearchPage }
