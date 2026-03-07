@@ -1,5 +1,5 @@
 import { drizzle } from 'drizzle-orm/d1'
-import { readFile } from 'node:fs/promises'
+import { readFile, readdir } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import {
   user, session, account, verification, userProfiles,
@@ -9,19 +9,33 @@ import {
 } from '../../database/schema'
 
 async function runMigration(d1: any) {
-  const migrationPath = resolve(process.cwd(), 'server/database/migrations/0000_init.sql')
-  const migrationSql = await readFile(migrationPath, 'utf-8')
-  const cleaned = migrationSql
-    .replace(/--> statement-breakpoint/g, '')
-    .replace(/CREATE TABLE /g, 'CREATE TABLE IF NOT EXISTS ')
-    .replace(/CREATE UNIQUE INDEX /g, 'CREATE UNIQUE INDEX IF NOT EXISTS ')
-    .replace(/CREATE INDEX /g, 'CREATE INDEX IF NOT EXISTS ')
-  const statements = cleaned
-    .split(';')
-    .map(s => s.trim())
-    .filter(s => s.length > 0)
-  for (const stmt of statements) {
-    await d1.prepare(stmt).run()
+  const migrationsDir = resolve(process.cwd(), 'server/database/migrations')
+  const files = await readdir(migrationsDir)
+  const sqlFiles = files.filter(f => f.endsWith('.sql')).sort()
+
+  for (const file of sqlFiles) {
+    const migrationPath = resolve(migrationsDir, file)
+    const migrationSql = await readFile(migrationPath, 'utf-8')
+    const cleaned = migrationSql
+      .replace(/--> statement-breakpoint/g, '')
+      .replace(/CREATE TABLE /g, 'CREATE TABLE IF NOT EXISTS ')
+      .replace(/CREATE UNIQUE INDEX /g, 'CREATE UNIQUE INDEX IF NOT EXISTS ')
+      .replace(/CREATE INDEX /g, 'CREATE INDEX IF NOT EXISTS ')
+    const statements = cleaned
+      .split(';')
+      .map(s => s.trim())
+      .filter(s => s.length > 0)
+    for (const stmt of statements) {
+      try {
+        await d1.prepare(stmt).run()
+      }
+      catch (err: any) {
+        // Ignore "duplicate column" errors from re-running ALTER TABLE
+        if (!err.message?.includes('duplicate column')) {
+          throw err
+        }
+      }
+    }
   }
 }
 
@@ -119,6 +133,7 @@ export default defineEventHandler(async (event) => {
         stories?: Array<{
           id?: number; urlHash: string; url: string; headline: string
           description?: string; sourceId?: number; status?: string; clusterId?: number
+          embedding?: string
         }>
         clusters?: Array<{ id?: number; primaryStoryId?: number; storyCount?: number }>
         storyPoliticians?: Array<{ storyId: number; politicianId: number }>
@@ -160,6 +175,7 @@ export default defineEventHandler(async (event) => {
             ...s,
             status: (s.status as any) ?? 'active',
             submittedAt: now,
+            embedding: s.embedding ?? null,
           })
         }
       }
