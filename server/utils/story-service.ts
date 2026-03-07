@@ -1,7 +1,10 @@
 import { drizzle } from 'drizzle-orm/d1'
-import { eq } from 'drizzle-orm'
+import { eq, and, isNotNull, gte, inArray, sql } from 'drizzle-orm'
 import { stories, storyClusters, storyPoliticians, sources } from '../database/schema'
 import type { H3Event } from 'h3'
+
+const CLUSTER_SIMILARITY_THRESHOLD = 0.82
+const CLUSTER_WINDOW_HOURS = 72
 
 interface CreateStoryInput {
   url: string
@@ -48,6 +51,9 @@ export async function createStory(
     return { storyId: 0, status: 'no_pollies' }
   }
 
+  // Generate embedding for cluster matching
+  const embedding = await generateEmbedding(event, input.headline, input.description)
+
   // Find source by domain
   const [source] = await db
     .select({ id: sources.id, tier: sources.tier })
@@ -57,13 +63,30 @@ export async function createStory(
 
   const status = source && source.tier <= 2 ? 'active' : 'moderation'
 
-  // Create story cluster
+  // Try to find a matching cluster via embedding similarity
   const now = new Date()
-  const clusterRows = await db
-    .insert(storyClusters)
-    .values({ createdAt: now, storyCount: 1 })
-    .returning({ id: storyClusters.id })
-  const clusterId = clusterRows[0]!.id
+  const matchedClusterId = embedding
+    ? await findMatchingCluster(db, embedding, now)
+    : null
+
+  let clusterId: number
+
+  if (matchedClusterId) {
+    // Join existing cluster
+    clusterId = matchedClusterId
+    await db
+      .update(storyClusters)
+      .set({ storyCount: sql`${storyClusters.storyCount} + 1` })
+      .where(eq(storyClusters.id, clusterId))
+  }
+  else {
+    // Create new cluster
+    const clusterRows = await db
+      .insert(storyClusters)
+      .values({ createdAt: now, storyCount: 1 })
+      .returning({ id: storyClusters.id })
+    clusterId = clusterRows[0]!.id
+  }
 
   // Create story
   const storyRows = await db
@@ -80,15 +103,18 @@ export async function createStory(
       thumbnailUrl: input.imageUrl,
       status,
       clusterId,
+      embedding: embedding ? JSON.stringify(embedding) : null,
     })
     .returning({ id: stories.id })
   const storyId = storyRows[0]!.id
 
-  // Update cluster with primary story
-  await db
-    .update(storyClusters)
-    .set({ primaryStoryId: storyId })
-    .where(eq(storyClusters.id, clusterId))
+  // Set primaryStoryId only for new clusters
+  if (!matchedClusterId) {
+    await db
+      .update(storyClusters)
+      .set({ primaryStoryId: storyId })
+      .where(eq(storyClusters.id, clusterId))
+  }
 
   // Link politicians
   for (const politicianId of politicianIds) {
@@ -98,9 +124,47 @@ export async function createStory(
       .onConflictDoNothing()
   }
 
-  console.log(`[Story] Created: "${input.headline}" (${politicianIds.length} pollies, status: ${status})`)
+  console.log(`[Story] Created: "${input.headline}" (${politicianIds.length} pollies, status: ${status}, cluster: ${clusterId}${matchedClusterId ? ' [matched]' : ' [new]'})`)
 
   return { storyId, status: 'created' }
+}
+
+async function findMatchingCluster(
+  db: ReturnType<typeof drizzle>,
+  embedding: number[],
+  now: Date,
+): Promise<number | null> {
+  const cutoff = new Date(now.getTime() - CLUSTER_WINDOW_HOURS * 60 * 60 * 1000)
+
+  const recentStories = await db
+    .select({
+      clusterId: stories.clusterId,
+      embedding: stories.embedding,
+    })
+    .from(stories)
+    .where(
+      and(
+        isNotNull(stories.embedding),
+        isNotNull(stories.clusterId),
+        gte(stories.submittedAt, cutoff),
+        inArray(stories.status, ['active', 'moderation']),
+      ),
+    )
+
+  let bestClusterId: number | null = null
+  let bestSimilarity = CLUSTER_SIMILARITY_THRESHOLD
+
+  for (const row of recentStories) {
+    if (!row.embedding || !row.clusterId) continue
+    const other = JSON.parse(row.embedding) as number[]
+    const sim = cosineSimilarity(embedding, other)
+    if (sim > bestSimilarity) {
+      bestSimilarity = sim
+      bestClusterId = row.clusterId
+    }
+  }
+
+  return bestClusterId
 }
 
 async function hashUrl(url: string): Promise<string> {
