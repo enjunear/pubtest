@@ -374,37 +374,37 @@
           "id": "8.1",
           "name": "Build admin route protection",
           "description": "Server middleware protecting /admin/* routes. Checks is_admin flag on user_profiles. Reuses Better Auth session — no separate admin login",
-          "completed": false
+          "completed": true
         },
         {
           "id": "8.2",
           "name": "Build story moderation queue",
           "description": "Admin page showing Tier 3 stories pending moderation. Approve/reject buttons. Show story metadata and source domain",
-          "completed": false
+          "completed": true
         },
         {
           "id": "8.3",
           "name": "Build source management page",
           "description": "Admin page to list all sources, add new source, change tier, toggle active/inactive. Manage RSS feeds per source (add/edit/pause/delete feeds)",
-          "completed": false
+          "completed": true
         },
         {
           "id": "8.4",
           "name": "Build politician management page",
           "description": "Admin page to list/edit/add/deactivate politicians. Edit name, party, electorate, photo URL, status",
-          "completed": false
+          "completed": true
         },
         {
           "id": "8.5",
           "name": "Build user management page",
           "description": "Admin page to list users, view account details (electorate, created date, vote count, linked OAuth providers), ban/suspend accounts",
-          "completed": false
+          "completed": true
         },
         {
           "id": "8.6",
           "name": "Build basic analytics dashboard",
           "description": "Admin page showing: stories ingested today, votes today, new registrations today, active RSS feeds, feed error count. Simple counters",
-          "completed": false
+          "completed": true
         }
       ]
     },
