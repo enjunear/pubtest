@@ -1,6 +1,11 @@
 <script setup lang="ts">
 definePageMeta({ auth: { only: 'user' } })
 
+useSeoMeta({
+  title: 'Welcome',
+  robots: 'noindex',
+})
+
 const { user } = useAuth()
 const loading = ref(false)
 const ageConfirmed = ref(false)

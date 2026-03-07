@@ -75,8 +75,12 @@ async function handleVote(clusterId: number, vote: 'pass' | 'fail') {
   await castVote(clusterId, vote, counts.passCount, counts.failCount)
 }
 
-useHead({
-  title: () => polly.value ? `${polly.value.name} - The Pub Test` : 'Politician',
+useSeoMeta({
+  title: () => polly.value?.name ?? 'Politician',
+  ogTitle: () => polly.value ? `${polly.value.name} - The Pub Test` : 'Politician',
+  description: () => polly.value ? `See how ${polly.value.name} (${polly.value.party}) rates on the pub test.` : '',
+  ogDescription: () => polly.value ? `See how ${polly.value.name} (${polly.value.party}) rates on the pub test.` : '',
+  ogImage: () => polly.value?.photoUrl ?? undefined,
 })
 </script>
 

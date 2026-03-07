@@ -1,6 +1,13 @@
 <script setup lang="ts">
 definePageMeta({ auth: { only: 'guest' } })
 
+useSeoMeta({
+  title: 'Sign In',
+  description: 'Sign in to The Pub Test to vote on whether politicians pass the pub test.',
+  ogTitle: 'Sign In - The Pub Test',
+  ogDescription: 'Sign in to The Pub Test to vote on whether politicians pass the pub test.',
+})
+
 const { client } = useAuth()
 const loading = ref(false)
 const magicLinkSent = ref(false)

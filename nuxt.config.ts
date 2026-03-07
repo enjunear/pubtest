@@ -3,6 +3,15 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
+  app: {
+    head: {
+      titleTemplate: '%s - The Pub Test',
+      meta: [
+        { name: 'description', content: 'Hold Australian politicians accountable. Vote on whether their actions pass the pub test.' },
+      ],
+    },
+  },
+
   modules: ['@nuxt/ui', '@nuxtjs/turnstile'],
 
   turnstile: {

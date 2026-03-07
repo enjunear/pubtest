@@ -92,7 +92,11 @@ export function useVoting() {
       delete optimisticCounts.value[clusterId]
 
       if (err?.statusCode === 429) {
-        toast.add({ title: 'Slow down', description: 'Vote rate limit exceeded. Try again later.', color: 'warning' })
+        const retryAfter = err?.data?.retryAfter
+        const desc = retryAfter
+          ? `Vote rate limit exceeded. Try again in ${retryAfter} seconds.`
+          : 'Vote rate limit exceeded. Try again later.'
+        toast.add({ title: 'Slow down', description: desc, color: 'warning' })
       } else {
         toast.add({ title: 'Vote failed', description: 'Something went wrong.', color: 'error' })
       }

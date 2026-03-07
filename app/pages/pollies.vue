@@ -28,7 +28,12 @@ function resetFilters() {
 const parties = ['Labor', 'Liberal', 'Nationals', 'Greens', 'Independent']
 const states = ['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT']
 
-useHead({ title: 'Politicians - The Pub Test' })
+useSeoMeta({
+  title: 'Politicians',
+  description: 'Browse Australian federal politicians and their pub test approval ratings.',
+  ogTitle: 'Politicians - The Pub Test',
+  ogDescription: 'Browse Australian federal politicians and their pub test approval ratings.',
+})
 </script>
 
 <template>
