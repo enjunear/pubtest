@@ -15,6 +15,7 @@ const { data: story } = await useFetch<{
   passCount: number
   failCount: number
   totalVotes: number
+  clusterStories: { id: number, headline: string, url: string, source: { name: string | null, domain: string | null } | null }[]
 }>(`/api/stories/${route.params.id}`)
 
 if (!story.value) {
@@ -77,6 +78,23 @@ async function handleVote(vote: 'pass' | 'fail') {
     <p v-if="story.description" class="text-gray-600 dark:text-gray-400">
       {{ story.description }}
     </p>
+
+    <!-- Also reported by -->
+    <div v-if="story.clusterStories?.length" class="space-y-2">
+      <h2 class="text-sm font-semibold text-gray-500 uppercase">Also Reported By</h2>
+      <div class="space-y-1 pl-3 border-l-2 border-primary/20">
+        <a
+          v-for="other in story.clusterStories"
+          :key="other.id"
+          :href="other.url"
+          target="_blank"
+          rel="noopener"
+          class="block text-sm text-gray-600 dark:text-gray-400 hover:text-primary transition-colors"
+        >
+          <span class="font-medium">{{ other.source?.name || 'Source' }}:</span> {{ other.headline }}
+        </a>
+      </div>
+    </div>
 
     <!-- Politicians -->
     <div v-if="story.politicians?.length" class="space-y-2">

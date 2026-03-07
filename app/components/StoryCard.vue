@@ -6,6 +6,13 @@ interface Politician {
   photoUrl: string | null
 }
 
+interface OtherSource {
+  id: number
+  headline: string
+  url: string
+  source: { name: string | null, domain: string | null } | null
+}
+
 interface Story {
   id: number
   url: string
@@ -15,11 +22,13 @@ interface Story {
   publishedAt?: string | null
   submittedAt: string
   clusterId: number | null
+  storyCount?: number
   source: { name: string | null, domain: string | null } | null
   passCount: number
   failCount: number
   totalVotes: number
   politicians: Politician[]
+  otherSources?: OtherSource[]
 }
 
 const props = defineProps<{
@@ -31,6 +40,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   vote: [clusterId: number, vote: 'pass' | 'fail']
 }>()
+
+const showOtherSources = ref(false)
 
 const effectivePass = computed(() => props.voteCounts?.passCount ?? props.story.passCount)
 const effectiveFail = computed(() => props.voteCounts?.failCount ?? props.story.failCount)
@@ -80,6 +91,27 @@ const timeAgo = computed(() => {
         <div class="flex items-center gap-2 mt-1 text-xs text-gray-500">
           <span v-if="story.source">{{ story.source.name }}</span>
           <span>{{ timeAgo }}</span>
+          <button
+            v-if="(story.storyCount ?? 1) > 1"
+            class="inline-flex items-center gap-1 px-1.5 py-0.5 bg-primary/10 text-primary rounded text-xs font-medium hover:bg-primary/20 transition-colors"
+            @click.prevent="showOtherSources = !showOtherSources"
+          >
+            {{ story.storyCount }} sources
+          </button>
+        </div>
+
+        <!-- Other sources (expandable) -->
+        <div v-if="showOtherSources && story.otherSources?.length" class="mt-2 pl-3 border-l-2 border-primary/20 space-y-1">
+          <a
+            v-for="other in story.otherSources"
+            :key="other.id"
+            :href="other.url"
+            target="_blank"
+            rel="noopener"
+            class="block text-xs text-gray-600 dark:text-gray-400 hover:text-primary transition-colors"
+          >
+            <span class="font-medium">{{ other.source?.name || 'Source' }}:</span> {{ other.headline }}
+          </a>
         </div>
 
         <!-- Politicians -->
