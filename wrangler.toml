@@ -5,13 +5,25 @@ compatibility_date = "2025-07-15"
 [[d1_databases]]
 binding = "DB"
 database_name = "pubtest-db"
-database_id = "00000000-0000-0000-0000-000000000000"  # Placeholder for local dev
+database_id = "00000000-0000-0000-0000-000000000000"  # Replace with your D1 database ID
 
 # KV Namespace for rate limiting
 [[kv_namespaces]]
 binding = "RATE_LIMIT"
-id = "00000000-0000-0000-0000-000000000001"  # Placeholder for local dev
+id = "00000000-0000-0000-0000-000000000001"  # Replace with your KV namespace ID
 
-# Workers AI - uncomment when deploying to production
-# [ai]
-# binding = "AI"
+# Workers AI
+[ai]
+binding = "AI"
+
+# Cron trigger for RSS feed polling (every 15 minutes)
+[triggers]
+crons = ["*/15 * * * *"]
+
+# Required environment variables (set via `wrangler secret put <NAME>`)
+# BETTER_AUTH_SECRET     - Secret key for Better Auth session signing
+# BETTER_AUTH_URL        - Production URL (e.g. https://pubtest.com.au)
+# GOOGLE_CLIENT_ID       - Google OAuth client ID
+# GOOGLE_CLIENT_SECRET   - Google OAuth client secret
+# RESEND_API_KEY         - Resend API key for magic link emails
+# TURNSTILE_SECRET_KEY   - Cloudflare Turnstile secret key

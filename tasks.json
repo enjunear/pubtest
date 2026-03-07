@@ -417,38 +417,38 @@
           "id": "9.1",
           "name": "Full integration test locally",
           "description": "End-to-end walkthrough of all user flows locally: register, onboard, browse feed, vote, view polly profiles, submit story, admin moderation. Fix any issues",
-          "completed": false
+          "completed": true
         },
         {
           "id": "9.2",
           "name": "Mobile responsiveness testing",
           "description": "Test all pages at mobile breakpoints. Fix layout issues. Ensure vote buttons are tap-friendly",
-          "completed": false
+          "completed": true
         },
         {
           "id": "9.3",
           "name": "SEO and meta tags",
           "description": "Add appropriate meta tags, OpenGraph tags for sharing polly profiles and stories on social media. Nuxt SEO composables",
-          "completed": false
+          "completed": true
         },
         {
           "id": "9.4",
           "name": "Error handling and edge cases",
           "description": "Handle: failed RSS fetches gracefully, OAuth errors, rate limit UX (show friendly message), empty states (no stories yet, no votes yet), 404 pages",
-          "completed": false
+          "completed": true
         },
         {
           "id": "9.5",
           "name": "Create terms of service and privacy policy pages",
           "description": "Static pages with ToS (votes are opinion, no manipulation) and privacy policy (Australian Privacy Act compliant, data collected, no data sold)",
-          "completed": false
+          "completed": true
         }
       ]
     },
     {
       "id": "phase-10",
       "name": "Production Deployment",
-      "description": "Deploy to Cloudflare production",
+      "description": "Deploy to Cloudflare production. Local prep complete: wrangler.toml updated (AI binding, cron trigger, env var docs), deploy/migrate scripts added to package.json, .env.example comprehensive, build verified.",
       "tasks": [
         {
           "id": "10.1",
