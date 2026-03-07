@@ -9,7 +9,9 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "deploy": "nuxt build && wrangler pages deploy",
+    "db:migrate": "wrangler d1 migrations apply pubtest-db"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
