@@ -30,3 +30,4 @@ Thumbs.db
 
 # pnpm
 pnpm-debug.log
+.playwright*/
