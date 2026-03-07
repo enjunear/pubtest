@@ -1,5 +1,5 @@
 import { drizzle } from 'drizzle-orm/d1'
-import { eq, sql } from 'drizzle-orm'
+import { eq, and, ne, sql, inArray } from 'drizzle-orm'
 import { stories, sources, storyPoliticians, politicians, votes } from '../../database/schema'
 
 export default defineEventHandler(async (event) => {
@@ -30,8 +30,18 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, message: 'Story not found' })
   }
 
-  // Get linked politicians
-  const pollyLinks = await db
+  // Get all story IDs in this cluster for politician union
+  let clusterStoryIds = [id]
+  if (story.clusterId) {
+    const clusterRows = await db
+      .select({ id: stories.id })
+      .from(stories)
+      .where(eq(stories.clusterId, story.clusterId))
+    clusterStoryIds = clusterRows.map(s => s.id)
+  }
+
+  // Get linked politicians across all cluster stories (deduplicated)
+  const allPollyLinks = await db
     .select({
       id: politicians.id,
       name: politicians.name,
@@ -42,7 +52,15 @@ export default defineEventHandler(async (event) => {
     })
     .from(storyPoliticians)
     .innerJoin(politicians, eq(storyPoliticians.politicianId, politicians.id))
-    .where(eq(storyPoliticians.storyId, id))
+    .where(inArray(storyPoliticians.storyId, clusterStoryIds))
+
+  // Deduplicate
+  const seenIds = new Set<number>()
+  const pollyLinks = allPollyLinks.filter((p) => {
+    if (seenIds.has(p.id)) return false
+    seenIds.add(p.id)
+    return true
+  })
 
   // Get vote counts
   const [voteCounts] = await db
@@ -53,6 +71,34 @@ export default defineEventHandler(async (event) => {
     .from(votes)
     .where(story.clusterId ? eq(votes.clusterId, story.clusterId) : sql`0`)
 
+  // Get other stories in the same cluster
+  let clusterStories: Array<{ id: number, headline: string, url: string, source: { name: string | null, domain: string | null } | null }> = []
+  if (story.clusterId) {
+    const otherStories = await db
+      .select({
+        id: stories.id,
+        headline: stories.headline,
+        url: stories.url,
+        sourceName: sources.name,
+        sourceDomain: sources.domain,
+      })
+      .from(stories)
+      .leftJoin(sources, eq(stories.sourceId, sources.id))
+      .where(
+        and(
+          eq(stories.clusterId, story.clusterId),
+          ne(stories.id, id),
+        ),
+      )
+
+    clusterStories = otherStories.map(s => ({
+      id: s.id,
+      headline: s.headline,
+      url: s.url,
+      source: s.sourceName ? { name: s.sourceName, domain: s.sourceDomain } : null,
+    }))
+  }
+
   return {
     ...story,
     source: story.sourceName ? { name: story.sourceName, domain: story.sourceDomain } : null,
@@ -60,5 +106,6 @@ export default defineEventHandler(async (event) => {
     passCount: voteCounts?.passCount || 0,
     failCount: voteCounts?.failCount || 0,
     totalVotes: (voteCounts?.passCount || 0) + (voteCounts?.failCount || 0),
+    clusterStories,
   }
 })
