@@ -21,6 +21,14 @@ if (!story.value) {
   throw createError({ statusCode: 404, message: 'Story not found' })
 }
 
+useSeoMeta({
+  title: () => story.value?.headline ?? 'Story',
+  ogTitle: () => story.value ? `${story.value.headline} - The Pub Test` : 'Story',
+  description: () => story.value?.description ?? '',
+  ogDescription: () => story.value?.description ?? '',
+  ogImage: () => story.value?.thumbnailUrl ?? undefined,
+})
+
 const { getUserVote, getVoteCounts, castVote } = useVoting()
 
 const currentVote = computed(() => getUserVote(story.value?.clusterId ?? null))

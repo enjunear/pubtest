@@ -1,4 +1,12 @@
 <script setup lang="ts">
+useSeoMeta({
+  title: 'The Pub Test',
+  titleTemplate: '',
+  description: 'Hold Australian politicians accountable. Vote on whether their actions pass the pub test.',
+  ogTitle: 'The Pub Test',
+  ogDescription: 'Hold Australian politicians accountable. Vote on whether their actions pass the pub test.',
+})
+
 const sort = ref('new')
 const page = ref(1)
 

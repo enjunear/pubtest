@@ -1,6 +1,11 @@
 <script setup lang="ts">
 definePageMeta({ auth: { only: 'user' } })
 
+useSeoMeta({
+  title: 'Settings',
+  robots: 'noindex',
+})
+
 const { user, signOut } = useAuth()
 const loading = ref(false)
 const successMessage = ref('')

@@ -1,6 +1,13 @@
 <script setup lang="ts">
 definePageMeta({ auth: { only: 'user' } })
 
+useSeoMeta({
+  title: 'Submit a Story',
+  description: 'Submit a news article about an Australian politician to The Pub Test.',
+  ogTitle: 'Submit a Story - The Pub Test',
+  ogDescription: 'Submit a news article about an Australian politician to The Pub Test.',
+})
+
 const urlInput = ref('')
 const loading = ref(false)
 const errorMessage = ref('')

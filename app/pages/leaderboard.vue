@@ -24,7 +24,12 @@ const ranked = computed(() => {
 const parties = ['Labor', 'Liberal', 'Nationals', 'Greens', 'Independent']
 const states = ['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT']
 
-useHead({ title: 'Leaderboard - The Pub Test' })
+useSeoMeta({
+  title: 'Leaderboard',
+  description: 'See which Australian politicians have the highest and lowest pub test approval ratings.',
+  ogTitle: 'Leaderboard - The Pub Test',
+  ogDescription: 'See which Australian politicians have the highest and lowest pub test approval ratings.',
+})
 </script>
 
 <template>

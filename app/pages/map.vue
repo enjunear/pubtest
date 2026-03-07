@@ -9,7 +9,12 @@ const { data } = await useFetch<{
   approvalPct: number | null
 }[]>('/api/heatmap')
 
-useHead({ title: 'Electorate Map - The Pub Test' })
+useSeoMeta({
+  title: 'Electorate Map',
+  description: 'Explore Australian federal electorates and their MP approval ratings on an interactive heatmap.',
+  ogTitle: 'Electorate Map - The Pub Test',
+  ogDescription: 'Explore Australian federal electorates and their MP approval ratings on an interactive heatmap.',
+})
 </script>
 
 <template>
