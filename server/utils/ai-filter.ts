@@ -108,3 +108,35 @@ export async function extractPoliticianIds(
 
   return matched
 }
+
+export async function generateEmbedding(
+  event: H3Event,
+  headline: string,
+  description?: string,
+): Promise<number[] | null> {
+  const ai = event.context.cloudflare?.env?.AI
+  if (!ai) return null
+
+  try {
+    const text = `${headline} ${description || ''}`.trim()
+    const result = await ai.run('@cf/baai/bge-small-en-v1.5', { text: [text] }) as { data?: number[][] }
+    return result.data?.[0] ?? null
+  }
+  catch (err) {
+    console.error('[AI Embedding] Workers AI failed:', err)
+    return null
+  }
+}
+
+export function cosineSimilarity(a: number[], b: number[]): number {
+  let dot = 0
+  let magA = 0
+  let magB = 0
+  for (let i = 0; i < a.length; i++) {
+    dot += a[i] * b[i]
+    magA += a[i] * a[i]
+    magB += b[i] * b[i]
+  }
+  const magnitude = Math.sqrt(magA) * Math.sqrt(magB)
+  return magnitude === 0 ? 0 : dot / magnitude
+}

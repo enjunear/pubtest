@@ -154,6 +154,7 @@ export const stories = sqliteTable('stories', {
   thumbnailUrl: text('thumbnail_url'),
   status: text('status', { enum: ['active', 'moderation', 'rejected', 'archived'] }).notNull().default('active'),
   clusterId: integer('cluster_id').references(() => storyClusters.id),
+  embedding: text('embedding'),
 }, (table) => [
   index('idx_stories_status_submitted').on(table.status, table.submittedAt),
 ])

@@ -49,6 +49,7 @@ export function seedData(data: {
   stories?: Array<{
     id?: number; urlHash: string; url: string; headline: string
     description?: string; sourceId?: number; status?: string; clusterId?: number
+    embedding?: string
   }>
   clusters?: Array<{ id?: number; primaryStoryId?: number; storyCount?: number }>
   storyPoliticians?: Array<{ storyId: number; politicianId: number }>
