@@ -38,7 +38,7 @@ useSeoMeta({
 
     <!-- Tabs + filters -->
     <div class="flex flex-wrap items-center gap-3 mb-6">
-      <UButtonGroup>
+      <div class="flex gap-1.5">
         <UButton
           size="sm"
           :variant="tab === 'highest' ? 'solid' : 'outline'"
@@ -51,7 +51,7 @@ useSeoMeta({
           label="Lowest Approval"
           @click="tab = 'lowest'"
         />
-      </UButtonGroup>
+      </div>
 
       <select
         v-model="party"
