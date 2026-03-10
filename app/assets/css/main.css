@@ -25,10 +25,12 @@
   }
 
   body {
+    min-height: 100dvh;
     background:
       radial-gradient(ellipse at 20% 0%, oklch(0.95 0.02 80) 0%, transparent 50%),
       radial-gradient(ellipse at 80% 100%, oklch(0.93 0.02 60) 0%, transparent 50%),
       var(--ui-bg);
+    background-attachment: fixed;
   }
 
   .dark body {
@@ -36,5 +38,6 @@
       radial-gradient(ellipse at 20% 0%, oklch(0.2 0.02 60) 0%, transparent 50%),
       radial-gradient(ellipse at 80% 100%, oklch(0.18 0.01 80) 0%, transparent 50%),
       var(--ui-bg);
+    background-attachment: fixed;
   }
 }
