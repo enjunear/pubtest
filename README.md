@@ -11,7 +11,7 @@ A web app that surfaces media stories about Australian federal politicians and l
 3. **The public votes** — Registered users vote Pass or Fail on each story
 4. **Ratings aggregate** — Every politician gets a running approval rating based on all votes across their linked stories
 
-No user-generated text content. No comments. No defamation risk. Just vote.
+No user-generated text content. No comments. Just vote.
 
 ## Tech Stack
 
