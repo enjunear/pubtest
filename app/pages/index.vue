@@ -39,7 +39,7 @@ const sortOptions = [
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-bold">The Pub Test</h1>
       <div class="flex items-center gap-2">
-        <UButtonGroup>
+        <div class="flex gap-1.5">
           <UButton
             v-for="opt in sortOptions"
             :key="opt.value"
@@ -48,7 +48,7 @@ const sortOptions = [
             :label="opt.label"
             @click="sort = opt.value; page = 1"
           />
-        </UButtonGroup>
+        </div>
       </div>
     </div>
 

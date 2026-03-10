@@ -1,2 +1,40 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Vollkorn:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Vollkorn', ui-serif, Georgia, serif;
+}
+
+@layer base {
+  :root {
+    --ui-bg: var(--color-stone-50);
+    --ui-bg-muted: var(--color-stone-100);
+    --ui-bg-elevated: var(--color-stone-50);
+  }
+
+  .dark {
+    --ui-bg: var(--color-stone-950);
+    --ui-bg-muted: var(--color-stone-900);
+    --ui-bg-elevated: var(--color-stone-900);
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-serif);
+  }
+
+  body {
+    background:
+      radial-gradient(ellipse at 20% 0%, oklch(0.95 0.02 80) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, oklch(0.93 0.02 60) 0%, transparent 50%),
+      var(--ui-bg);
+  }
+
+  .dark body {
+    background:
+      radial-gradient(ellipse at 20% 0%, oklch(0.2 0.02 60) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, oklch(0.18 0.01 80) 0%, transparent 50%),
+      var(--ui-bg);
+  }
+}
