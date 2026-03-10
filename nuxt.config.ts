@@ -17,7 +17,7 @@ export default defineNuxtConfig({
   modules: ['@nuxt/ui', '@nuxtjs/turnstile'],
 
   turnstile: {
-    siteKey: '1x00000000000000000000AA',
+    siteKey: '0x4AAAAAACoopwk9rLOU4qWx',
   },
 
   nitro: {

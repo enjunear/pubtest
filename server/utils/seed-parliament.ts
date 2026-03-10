@@ -133,10 +133,11 @@ export async function seedParliament(db: ReturnType<typeof drizzle>) {
     state,
   }))
 
-  if (electorateInserts.length > 0) {
-    await db.insert(electorates).values(electorateInserts)
-    console.log(`Inserted ${electorateInserts.length} electorates`)
+  // D1 has a parameter limit, so insert in batches
+  for (const e of electorateInserts) {
+    await db.insert(electorates).values(e)
   }
+  console.log(`Inserted ${electorateInserts.length} electorates`)
 
   // Build electorate ID lookup
   const allElectorates = await db.select().from(electorates)

@@ -1,24 +1,27 @@
-name = "the-pub-test"
+name = "pub-test"
+pages_build_output_dir = "dist"
 compatibility_date = "2025-07-15"
 
 # D1 Database
 [[d1_databases]]
 binding = "DB"
 database_name = "pubtest-db"
-database_id = "00000000-0000-0000-0000-000000000000"  # Replace with your D1 database ID
+database_id = "cebb8c86-aabf-45b2-9399-e8a350ecf23f"
+migrations_dir = "server/database/migrations"
 
 # KV Namespace for rate limiting
 [[kv_namespaces]]
 binding = "RATE_LIMIT"
-id = "00000000-0000-0000-0000-000000000001"  # Replace with your KV namespace ID
+id = "145a42f7a24949cd92531087b4e35243"
 
 # Workers AI
 [ai]
 binding = "AI"
 
 # Cron trigger for RSS feed polling (every 15 minutes)
-[triggers]
-crons = ["*/15 * * * *"]
+# Note: Pages doesn't support triggers — use a separate Worker for cron jobs
+# [triggers]
+# crons = ["*/15 * * * *"]
 
 # Required environment variables (set via `wrangler secret put <NAME>`)
 # BETTER_AUTH_SECRET     - Secret key for Better Auth session signing

@@ -37,7 +37,7 @@ export function serverAuth(event: H3Event) {
 
   return betterAuth({
     database: drizzleAdapter(db, { provider: 'sqlite' }),
-    secret: env.BETTER_AUTH_SECRET || 'dev-secret-change-in-production',
+    secret: env.BETTER_AUTH_SECRET || 'local-dev-secret-at-least-32-characters-long',
     baseURL: getRequestURL(event).origin,
     emailAndPassword: { enabled: false },
     socialProviders: {
