@@ -98,15 +98,15 @@ useSeoMeta({
       >
         <UCard class="hover:ring-1 hover:ring-primary/30 transition-all h-full">
           <div class="flex items-center gap-3">
-            <UAvatar
+            <img
               v-if="polly.photoUrl"
               :src="polly.photoUrl"
               :alt="polly.name"
-              size="lg"
-            />
+              class="w-16 h-16 rounded-full object-cover flex-shrink-0"
+            >
             <div
               v-else
-              class="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0"
+              class="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0"
             >
               <UIcon name="i-heroicons-user" class="text-gray-400" />
             </div>

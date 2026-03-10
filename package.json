@@ -1,5 +1,5 @@
 {
-  "name": "the-pub-test",
+  "name": "pub-test",
   "type": "module",
   "private": true,
   "scripts": {
