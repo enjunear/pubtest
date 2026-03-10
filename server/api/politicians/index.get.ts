@@ -4,7 +4,6 @@ import { politicians, electorates, votes, stories, storyPoliticians } from '../.
 
 export default defineEventHandler(async (event) => {
   const db = drizzle(event.context.cloudflare.env.DB)
-  const kv = event.context.cloudflare.env.RATE_LIMIT
 
   const query = getQuery(event) as {
     party?: string
@@ -21,12 +20,12 @@ export default defineEventHandler(async (event) => {
   const offset = (page - 1) * limit
   const sort = query.sort || 'name'
 
-  // Check KV cache for the full list (only cache unfiltered default requests)
+  // Check cache for the full list (uses Cloudflare Cache API — free, no daily limits)
   const isDefaultRequest = !query.party && !query.chamber && !query.state && !query.search && sort === 'name' && page === 1 && limit === 50
   const cacheKey = 'politicians:list'
   if (isDefaultRequest) {
-    const cached = await kv.get(cacheKey)
-    if (cached) return JSON.parse(cached)
+    const cached = await getCached<{ politicians: any[], page: number, hasMore: boolean }>(cacheKey)
+    if (cached) return cached
   }
 
   // Build WHERE conditions
@@ -123,8 +122,9 @@ export default defineEventHandler(async (event) => {
 
   const response = { politicians: result, page, hasMore: rows.length === limit }
 
+  // Cache default request for 30 minutes (Cloudflare Cache API)
   if (isDefaultRequest) {
-    await kv.put(cacheKey, JSON.stringify(response), { expirationTtl: 300 })
+    await setCached(cacheKey, response, 1800)
   }
 
   return response

@@ -7,13 +7,12 @@ export default defineEventHandler(async (event) => {
   if (!id) throw createError({ statusCode: 400, message: 'Invalid politician ID' })
 
   const db = drizzle(event.context.cloudflare.env.DB)
-  const kv = event.context.cloudflare.env.RATE_LIMIT
 
-  // Check KV cache first
+  // Check cache first (uses Cloudflare Cache API — free, no daily limits)
   const cacheKey = `approval:${id}`
-  const cached = await kv.get(cacheKey)
+  const cached = await getCached<{ politicianId: number, approvalPct: number | null, passCount: number, failCount: number, totalVotes: number }>(cacheKey)
   if (cached) {
-    return JSON.parse(cached)
+    return cached
   }
 
   // Verify politician exists
@@ -46,8 +45,8 @@ export default defineEventHandler(async (event) => {
 
   const response = { politicianId: id, approvalPct, passCount, failCount, totalVotes }
 
-  // Cache for 5 minutes
-  await kv.put(cacheKey, JSON.stringify(response), { expirationTtl: 300 })
+  // Cache for 30 minutes (Cloudflare Cache API)
+  await setCached(cacheKey, response, 1800)
 
   return response
 })

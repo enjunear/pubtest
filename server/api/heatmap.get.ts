@@ -4,12 +4,11 @@ import { politicians, electorates, votes, stories, storyPoliticians } from '../d
 
 export default defineEventHandler(async (event) => {
   const db = drizzle(event.context.cloudflare.env.DB)
-  const kv = event.context.cloudflare.env.RATE_LIMIT
 
-  // Check KV cache
+  // Check cache (uses Cloudflare Cache API — free, no daily limits)
   const cacheKey = 'heatmap:data'
-  const cached = await kv.get(cacheKey)
-  if (cached) return JSON.parse(cached)
+  const cached = await getCached<any[]>(cacheKey)
+  if (cached) return cached
 
   // Fetch all current House members with their electorate and approval data
   const rows = await db
@@ -54,8 +53,8 @@ export default defineEventHandler(async (event) => {
     approvalPct: row.totalVotes > 0 ? Math.round((row.passCount / row.totalVotes) * 100) : null,
   }))
 
-  // Cache for 10 minutes
-  await kv.put(cacheKey, JSON.stringify(result), { expirationTtl: 600 })
+  // Cache for 60 minutes (Cloudflare Cache API)
+  await setCached(cacheKey, result, 3600)
 
   return result
 })
