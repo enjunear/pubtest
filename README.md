@@ -30,7 +30,7 @@ No user-generated text content. No comments. Just vote.
 
 ## Features
 
-- **Automated story ingestion** — RSS feeds polled every 15 minutes via Cloudflare cron
+- **Automated story ingestion** — RSS feeds polled daily via Cloudflare cron
 - **AI-powered filtering** — LLM classifies political relevance and extracts politician mentions
 - **Story clustering** — Embedding-based deduplication groups articles covering the same event
 - **Pass/Fail voting** — Simple binary vote with optimistic UI updates
@@ -185,7 +185,7 @@ pnpm db:migrate
 Stories enter the system through two channels:
 
 ### Automated RSS (Primary)
-Cloudflare cron job runs every 15 minutes:
+Cloudflare cron job runs daily:
 1. Polls active RSS feeds from Tier 1 & 2 sources
 2. Deduplicates by URL hash
 3. AI filters for political relevance
