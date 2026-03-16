@@ -79,6 +79,12 @@ useSeoMeta({
       </select>
     </div>
 
+    <!-- Movers: most improved & biggest drop -->
+    <LeaderboardMovers />
+
+    <!-- Party approval trends -->
+    <PartyTrends class="mb-6" />
+
     <!-- Ranking table -->
     <div v-if="ranked.length" class="space-y-2">
       <NuxtLink

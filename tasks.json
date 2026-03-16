@@ -454,43 +454,43 @@
           "id": "10.1",
           "name": "Set up Cloudflare account and resources",
           "description": "Create Cloudflare account (if needed). Create D1 database (production), KV namespaces (rate-limits). Enable Workers AI",
-          "completed": false
+          "completed": true
         },
         {
           "id": "10.2",
           "name": "Configure production secrets",
           "description": "Set secrets via wrangler: Google OAuth client ID/secret, Apple OAuth client ID/secret, Resend API key, Turnstile secret key, Better Auth secret",
-          "completed": false
+          "completed": true
         },
         {
           "id": "10.3",
           "name": "Run production database migrations and seed",
           "description": "Apply Drizzle migrations to production D1. Run seed scripts for electorates, politicians, sources, RSS feeds",
-          "completed": false
+          "completed": true
         },
         {
           "id": "10.4",
           "name": "Deploy to Cloudflare Pages",
           "description": "Connect git repo to Cloudflare Pages or deploy via wrangler pages deploy. Configure build command and output directory. Verify deployment",
-          "completed": false
+          "completed": true
         },
         {
           "id": "10.5",
           "name": "Configure custom domain",
           "description": "Register domain (pubtest.com.au or similar). Point DNS to Cloudflare Pages. Configure SSL. Update OAuth callback URLs to production domain",
-          "completed": false
+          "completed": true
         },
         {
           "id": "10.6",
           "name": "Smoke test production",
           "description": "Verify: OAuth login, onboarding, RSS ingestion running, stories appearing, voting works, polly pages load, admin panel accessible",
-          "completed": false
+          "completed": true
         },
         {
           "id": "10.7",
           "name": "Create admin account",
           "description": "Login via OAuth, manually set is_admin=true on user_profiles record in production D1",
-          "completed": false
+          "completed": true
         }
       ]
     },
@@ -503,19 +503,19 @@
           "id": "11.1",
           "name": "Build story embedding generation",
           "description": "On story creation, generate text embedding of headline+description via Workers AI. Store embedding in stories table or separate table",
-          "completed": false
+          "completed": true
         },
         {
           "id": "11.2",
           "name": "Build clustering service",
           "description": "Compare new story embedding against recent stories (cosine similarity). If similarity > threshold, assign to existing cluster. Otherwise create new cluster",
-          "completed": false
+          "completed": true
         },
         {
           "id": "11.3",
           "name": "Build cluster UI",
           "description": "Story cards show cluster badge if multiple sources. Expandable to see all articles in cluster. Votes shown at cluster level",
-          "completed": false
+          "completed": true
         }
       ]
     },
@@ -528,31 +528,31 @@
           "id": "12.1",
           "name": "Build daily stats snapshot cron",
           "description": "Cloudflare Cron Trigger running once daily. For each politician, calculate current approval %, total votes, pass/fail counts. Insert into polly_daily_stats",
-          "completed": false
+          "completed": true
         },
         {
           "id": "12.2",
           "name": "Build trend API endpoint",
           "description": "GET /api/politicians/[id]/trend?period=30d - returns time series of daily approval data. Support 30d, 90d, 1y, all periods",
-          "completed": false
+          "completed": true
         },
         {
           "id": "12.3",
           "name": "Build trend chart component",
           "description": "Chart.js line graph on polly profile page. X-axis: dates, Y-axis: approval %. Selectable time range. Responsive",
-          "completed": false
+          "completed": true
         },
         {
           "id": "12.4",
           "name": "Build leaderboard movers",
           "description": "Add 'most improved' and 'biggest drop' sections to leaderboard. Compare current approval to 30 days ago",
-          "completed": false
+          "completed": true
         },
         {
           "id": "12.5",
           "name": "Build party aggregate trends",
           "description": "Average approval per party over time. Party-level trend chart. 'Parliament mood' overall trend",
-          "completed": false
+          "completed": true
         }
       ]
     },

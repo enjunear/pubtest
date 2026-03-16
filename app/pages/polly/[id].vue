@@ -152,6 +152,9 @@ useSeoMeta({
       </div>
     </UCard>
 
+    <!-- Approval trend chart -->
+    <ApprovalTrend :politician-id="polly.id" />
+
     <!-- Linked stories -->
     <div class="space-y-4">
       <h2 class="text-lg font-semibold">Related Stories</h2>
